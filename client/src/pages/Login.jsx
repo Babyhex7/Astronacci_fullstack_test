@@ -1,25 +1,79 @@
 // Halaman Login
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { login as loginAPI } from "../services/authService";
+import { login as loginAPI, getMe } from "../services/authService";
 import Button from "../components/common/Button";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import Loader from "../components/common/Loader";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // Redirect setelah login
   const from = location.state?.from?.pathname || "/dashboard";
+
+  // Redirect otomatis jika sudah login
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const hasMembership = user?.membership_id || user?.membership;
+      if (hasMembership) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/select-membership", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  // Handle OAuth token dari URL (jika redirect kesini dengan token)
+  useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      console.log("[Login] OAuth token ditemukan, redirect...");
+      setOauthLoading(true);
+      // Hapus token dari URL
+      searchParams.delete("token");
+      setSearchParams(searchParams, { replace: true });
+      // Simpan token dan fetch user
+      localStorage.setItem("token", token);
+      getMe()
+        .then((data) => {
+          login(token, data.user);
+          // Navigate akan ditangani oleh useEffect di atas
+        })
+        .catch((err) => {
+          console.error("Error fetching user:", err);
+          setError("Gagal memuat data user");
+          setOauthLoading(false);
+        });
+    }
+  }, [searchParams, setSearchParams, login]);
+
+  // Cek OAuth error dari URL
+  useEffect(() => {
+    const oauthError = searchParams.get("error");
+    if (oauthError === "oauth_failed") {
+      setError(
+        "Login dengan OAuth gagal. Silakan coba lagi atau gunakan email.",
+      );
+    }
+  }, [searchParams]);
 
   // Handle submit form
   const handleSubmit = async (e) => {
@@ -44,8 +98,13 @@ const Login = () => {
     }
   };
 
+  // Show loader saat OAuth processing
+  if (oauthLoading) {
+    return <Loader.FullPage />;
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-50 to-dark-100 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,11 +114,13 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-dark-100">
           {/* Header */}
           <div className="text-center mb-8">
-            <img
-              src="/astronacci-logo.svg"
-              alt="Astronacci"
-              className="w-16 h-16 mx-auto mb-4"
-            />
+            <div className="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <img
+                src="/astronacci-logo.svg"
+                alt="Astronacci"
+                className="w-12 h-12"
+              />
+            </div>
             <h1 className="text-2xl font-bold text-dark-800">
               Masuk ke Astronacci
             </h1>
@@ -83,7 +144,7 @@ const Login = () => {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-2 bg-accent-50 text-accent-600 p-3 rounded-lg mb-4 border border-accent-200"
+              className="flex items-center space-x-2 bg-red-50 text-red-600 p-3 rounded-lg mb-4 border border-red-200"
             >
               <FiAlertCircle />
               <span>{error}</span>

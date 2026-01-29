@@ -29,19 +29,28 @@ exports.getArticleById = async (req, res) => {
       return res.status(404).json({ message: "Artikel tidak ditemukan" });
     }
 
-    // Simpan history akses jika belum pernah & bukan sudah diakses
-    if (req.accessInfo && !req.accessInfo.alreadyAccessed) {
+    // Simpan history akses jika ini konten baru (belum pernah diakses)
+    // accessInfo.alreadyAccessed = true jika sudah ada di history
+    // accessInfo.alreadyAccessed = undefined jika konten baru
+    const isNewAccess =
+      req.accessInfo && req.accessInfo.alreadyAccessed !== true;
+
+    if (isNewAccess) {
+      console.log(`[USAGE] User ${userId} mengakses artikel baru ID: ${id}`);
       await UserContentHistory.create({
         user_id: userId,
         content_type: "article",
         content_id: parseInt(id),
       });
+    } else {
+      console.log(`[USAGE] User ${userId} mengakses ulang artikel ID: ${id}`);
     }
 
     res.json({
       article,
       accessInfo: {
         remaining: req.accessInfo?.remaining,
+        isNewAccess,
       },
     });
   } catch (err) {

@@ -22,20 +22,23 @@ const SelectMembership = () => {
   useEffect(() => {
     const token = searchParams.get("token");
     if (token) {
+      console.log("[SelectMembership] OAuth token ditemukan, menyimpan...");
       localStorage.setItem("token", token);
-      // Fetch user data
+      // Fetch user data dan set auth state
       getMe()
         .then((data) => {
-          updateUser(data.user);
+          // Set auth state dengan login function (penting untuk set isAuthenticated)
+          login(token, data.user);
           setInitializing(false);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Error fetching user:", err);
           setInitializing(false);
         });
     } else {
       setInitializing(false);
     }
-  }, [searchParams, updateUser]);
+  }, [searchParams, login]);
 
   // Data tipe membership
   const memberships = [
@@ -67,8 +70,9 @@ const SelectMembership = () => {
       description: "Full akses tanpa batas",
       articles: "Unlimited",
       videos: "Unlimited",
-      color: "border-accent-200 hover:border-accent-400",
-      selected: "border-accent-500 bg-accent-50 ring-2 ring-accent-500",
+      color: "border-secondary-200 hover:border-secondary-400",
+      selected:
+        "border-secondary-500 bg-secondary-50 ring-2 ring-secondary-500",
     },
   ];
 
@@ -107,7 +111,7 @@ const SelectMembership = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-50 to-dark-100 py-12 px-4">
+    <div className="min-h-screen bg-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -133,7 +137,7 @@ const SelectMembership = () => {
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center justify-center space-x-2 bg-accent-50 text-accent-600 p-3 rounded-xl mb-6 border border-accent-200"
+            className="flex items-center justify-center space-x-2 bg-red-50 text-red-600 p-3 rounded-xl mb-6 border border-red-200"
           >
             <FiAlertCircle />
             <span>{error}</span>
@@ -160,7 +164,7 @@ const SelectMembership = () => {
             >
               {/* Popular badge */}
               {m.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Populer
                 </span>
               )}

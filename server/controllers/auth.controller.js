@@ -18,7 +18,7 @@ const generateToken = (user) => {
   );
 };
 
-// POST /api/auth/register - Register manual (step 1)
+// POST /api/auth/register - Register manual (tanpa auto-login)
 exports.register = async (req, res) => {
   const { email, password, full_name } = req.body;
 
@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Buat user baru (tanpa membership, pilih nanti)
+    // Buat user baru (tanpa membership, pilih nanti saat login)
     const user = await User.create({
       email,
       password: hashedPassword,
@@ -41,18 +41,14 @@ exports.register = async (req, res) => {
       membership_id: null,
     });
 
-    // Generate token
-    const token = generateToken(user);
-
+    // Tidak return token, user harus login manual
     res.status(201).json({
-      message: "Register berhasil, silakan pilih tipe membership",
+      message: "Registrasi berhasil! Silakan login untuk melanjutkan.",
       user: {
         id: user.id,
         email: user.email,
         full_name: user.full_name,
-        needSelectMembership: true,
       },
-      token,
     });
   } catch (err) {
     console.error("Error register:", err);
@@ -97,6 +93,7 @@ exports.selectMembership = async (req, res) => {
         id: user.id,
         email: user.email,
         full_name: user.full_name,
+        membership_id: membership.id,
         membership: membership,
       },
       token: newToken,
@@ -187,12 +184,20 @@ exports.getMe = async (req, res) => {
 // OAuth Callback Handler (Google/Facebook)
 exports.oauthCallback = (req, res) => {
   const user = req.user;
+
+  console.log("[OAuth Callback] User:", user?.email);
+  console.log("[OAuth Callback] membership_id:", user?.membership_id);
+  console.log("[OAuth Callback] CLIENT_URL:", process.env.CLIENT_URL);
+
   const token = generateToken(user);
 
   // Redirect ke frontend dengan token
+  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
   const redirectUrl = user.membership_id
-    ? `${process.env.CLIENT_URL}/dashboard?token=${token}`
-    : `${process.env.CLIENT_URL}/select-membership?token=${token}&isNew=true`;
+    ? `${clientUrl}/dashboard?token=${token}`
+    : `${clientUrl}/select-membership?token=${token}`;
+
+  console.log("[OAuth Callback] Redirect to:", redirectUrl);
 
   res.redirect(redirectUrl);
 };

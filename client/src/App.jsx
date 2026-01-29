@@ -25,7 +25,7 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="flex flex-col min-h-screen bg-gray-50">
+        <div className="flex flex-col min-h-screen bg-white">
           {/* Navbar */}
           <Navbar />
 
@@ -36,6 +36,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+
+              {/* Select membership - public untuk OAuth redirect tapi perlu token */}
               <Route path="/select-membership" element={<SelectMembership />} />
 
               {/* Protected routes */}

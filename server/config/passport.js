@@ -33,9 +33,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Cari user berdasarkan provider_id
+          // Cari user berdasarkan provider_id (include membership untuk cek)
           let user = await User.findOne({
             where: { provider_id: profile.id, auth_provider: "google" },
+            include: [{ model: Membership, as: "membership" }],
           });
 
           // Jika belum ada, buat user baru (tanpa membership, pilih nanti)
@@ -50,6 +51,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
               membership_id: null, // Belum pilih tipe
             });
           }
+
+          console.log(
+            `[OAuth Google] User: ${user.email}, membership_id: ${user.membership_id}`,
+          );
 
           // Tambah flag untuk cek apakah user baru
           user.dataValues.isNewUser = isNewUser;
@@ -77,8 +82,10 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          // Cari user dengan include membership
           let user = await User.findOne({
             where: { provider_id: profile.id, auth_provider: "facebook" },
+            include: [{ model: Membership, as: "membership" }],
           });
 
           const isNewUser = !user;
@@ -93,6 +100,10 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
               membership_id: null,
             });
           }
+
+          console.log(
+            `[OAuth Facebook] User: ${user.email}, membership_id: ${user.membership_id}`,
+          );
 
           user.dataValues.isNewUser = isNewUser;
           done(null, user);

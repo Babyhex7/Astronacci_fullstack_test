@@ -1,34 +1,56 @@
 // Halaman Register
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { register as registerAPI } from "../services/authService";
 import Button from "../components/common/Button";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
-import { FiMail, FiLock, FiUser, FiAlertCircle } from "react-icons/fi";
+import {
+  FiMail,
+  FiLock,
+  FiUser,
+  FiAlertCircle,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect otomatis jika sudah login
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      const hasMembership = user?.membership_id || user?.membership;
+      if (hasMembership) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/select-membership", { replace: true });
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   // Handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     setLoading(true);
 
     try {
       const data = await registerAPI(email, password, fullName);
-      login(data.token, data.user);
-      // Redirect ke pilih membership
-      navigate("/select-membership");
+      setSuccess(data.message || "Registrasi berhasil! Silakan login.");
+      // Redirect ke login setelah 2 detik
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || "Registrasi gagal");
     } finally {
@@ -37,7 +59,7 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-50 to-dark-100 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -47,11 +69,13 @@ const Register = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-dark-100">
           {/* Header */}
           <div className="text-center mb-8">
-            <img
-              src="/astronacci-logo.svg"
-              alt="Astronacci"
-              className="w-16 h-16 mx-auto mb-4"
-            />
+            <div className="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <img
+                src="/astronacci-logo.svg"
+                alt="Astronacci"
+                className="w-12 h-12"
+              />
+            </div>
             <h1 className="text-2xl font-bold text-dark-800">
               Daftar Astronacci
             </h1>
@@ -75,10 +99,22 @@ const Register = () => {
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-2 bg-accent-50 text-accent-600 p-3 rounded-lg mb-4 border border-accent-200"
+              className="flex items-center space-x-2 bg-red-50 text-red-600 p-3 rounded-lg mb-4 border border-red-200"
             >
               <FiAlertCircle />
               <span>{error}</span>
+            </motion.div>
+          )}
+
+          {/* Success */}
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center space-x-2 bg-green-50 text-green-600 p-3 rounded-lg mb-4 border border-green-200"
+            >
+              <FiCheckCircle />
+              <span>{success}</span>
             </motion.div>
           )}
 

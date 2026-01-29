@@ -1,17 +1,44 @@
 // Halaman Dashboard
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { getStats } from "../services/userService";
+import { getMe } from "../services/authService";
 import Loader from "../components/common/Loader";
 import Badge from "../components/common/Badge";
 import { FiFileText, FiPlay, FiTrendingUp, FiUser } from "react-icons/fi";
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [oauthLoading, setOauthLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle OAuth token dari URL (login Google/Facebook redirect ke sini)
+  useEffect(() => {
+    const token = searchParams.get("token");
+    if (token) {
+      console.log("[Dashboard] OAuth token ditemukan, menyimpan...");
+      setOauthLoading(true);
+      // Hapus token dari URL agar bersih
+      searchParams.delete("token");
+      setSearchParams(searchParams, { replace: true });
+      // Simpan token dan fetch user data
+      localStorage.setItem("token", token);
+      getMe()
+        .then((data) => {
+          // Update auth state dengan login function
+          login(token, data.user);
+          setOauthLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching user:", err);
+          setOauthLoading(false);
+        });
+    }
+  }, [searchParams, setSearchParams, login]);
 
   // Fetch statistik saat mount
   useEffect(() => {
@@ -42,6 +69,13 @@ const Dashboard = () => {
 
   const membershipInfo = getMembershipInfo();
 
+  const articleStats = stats?.stats?.articles;
+  const videoStats = stats?.stats?.videos;
+  const articlesAccessed = articleStats?.accessed ?? 0;
+  const videosAccessed = videoStats?.accessed ?? 0;
+  const articleLimit = articleStats?.limit ?? membershipInfo.limit ?? 0;
+  const videoLimit = videoStats?.limit ?? membershipInfo.limit ?? 0;
+
   // Animasi
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -53,7 +87,7 @@ const Dashboard = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  if (loading) {
+  if (loading || oauthLoading) {
     return <Loader.FullPage />;
   }
 
@@ -112,9 +146,9 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-dark-400">Artikel Dibaca</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {stats?.articlesAccessed || 0}
+                  {articlesAccessed}
                   <span className="text-sm text-dark-400 font-normal">
-                    /{membershipInfo.limit === -1 ? "∞" : membershipInfo.limit}
+                    /{articleLimit === -1 ? "∞" : articleLimit}
                   </span>
                 </p>
               </div>
@@ -133,9 +167,9 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-dark-400">Video Ditonton</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {stats?.videosAccessed || 0}
+                  {videosAccessed}
                   <span className="text-sm text-dark-400 font-normal">
-                    /{membershipInfo.limit === -1 ? "∞" : membershipInfo.limit}
+                    /{videoLimit === -1 ? "∞" : videoLimit}
                   </span>
                 </p>
               </div>
@@ -154,8 +188,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-dark-400">Total Konten</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {(stats?.articlesAccessed || 0) +
-                    (stats?.videosAccessed || 0)}
+                  {articlesAccessed + videosAccessed}
                 </p>
               </div>
             </div>

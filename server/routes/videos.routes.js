@@ -5,10 +5,8 @@ const videosController = require("../controllers/videos.controller");
 const authMiddleware = require("../middleware/auth");
 const checkAccess = require("../middleware/checkAccess");
 
-// GET /api/videos - Ambil semua video (perlu login)
-router.get("/", authMiddleware, videosController.getAllVideos);
 
-// GET /api/videos/:id - Detail video (perlu login + cek akses)
+router.get("/", authMiddleware, videosController.getAllVideos);
 router.get(
   "/:id",
   authMiddleware,

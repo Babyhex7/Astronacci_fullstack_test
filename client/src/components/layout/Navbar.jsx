@@ -23,12 +23,14 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img
-              src="/astronacci-logo.svg"
-              alt="Astronacci"
-              className="w-10 h-10"
-            />
-            <span className="text-xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
+            <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
+              <img
+                src="/astronacci-logo.svg"
+                alt="Astronacci"
+                className="w-7 h-7"
+              />
+            </div>
+            <span className="text-xl font-bold text-primary-500">
               Astronacci
             </span>
           </Link>
@@ -62,7 +64,7 @@ const Navbar = () => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="flex items-center space-x-2 text-dark-600 hover:text-primary-500 font-medium px-3 py-2 rounded-lg hover:bg-dark-50 transition-all"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-sm font-semibold">
+                    <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-semibold">
                       {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
                     </div>
                     <span className="hidden lg:inline">
@@ -101,7 +103,7 @@ const Navbar = () => {
                             setIsDropdownOpen(false);
                             handleLogout();
                           }}
-                          className="w-full flex items-center space-x-2 px-4 py-2.5 text-accent-600 hover:bg-accent-50 transition-colors"
+                          className="w-full flex items-center space-x-2 px-4 py-2.5 text-primary-500 hover:bg-primary-50 transition-colors"
                         >
                           <FiLogOut className="w-4 h-4" />
                           <span>Logout</span>
@@ -117,11 +119,11 @@ const Navbar = () => {
                   to="/login"
                   className="text-dark-600 hover:text-primary-500 transition-colors font-medium"
                 >
-                  Login
+                  Masuk
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:shadow-primary-500/30 transition-all"
+                  className="bg-primary-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary-600 transition-all"
                 >
                   Daftar
                 </Link>

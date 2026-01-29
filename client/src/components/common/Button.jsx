@@ -9,12 +9,11 @@ const Button = ({
   fullWidth = false,
   className = "",
 }) => {
-  // Variasi warna (warna brand Astronacci)
+  // Variasi warna (warna brand Astronacci - solid)
   const variants = {
-    primary:
-      "bg-gradient-to-r from-primary-500 to-accent-500 hover:shadow-lg hover:shadow-primary-500/30 text-white",
-    secondary: "bg-dark-100 hover:bg-dark-200 text-dark-700",
-    danger: "bg-accent-600 hover:bg-accent-700 text-white",
+    primary: "bg-primary-500 hover:bg-primary-600 text-white",
+    secondary: "bg-secondary-500 hover:bg-secondary-600 text-white",
+    dark: "bg-dark-800 hover:bg-dark-900 text-white",
     outline: "border-2 border-primary-500 text-primary-500 hover:bg-primary-50",
     ghost: "text-dark-600 hover:bg-dark-100",
   };

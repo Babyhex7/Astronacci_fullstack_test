@@ -4,20 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Warna brand Astronacci (merah-oranye-kuning)
+        // Warna brand Astronacci - Merah solid dan Kuning
         primary: {
-          50: "#fef7f0",
-          100: "#fdeee0",
-          200: "#fad9b8",
-          300: "#f6be85",
-          400: "#f09a50",
-          500: "#eb7a2a",
-          600: "#dc5f1f",
-          700: "#b6461b",
-          800: "#91381e",
-          900: "#76301c",
-        },
-        accent: {
           50: "#fff5f5",
           100: "#ffe3e3",
           200: "#ffc9c9",
@@ -28,6 +16,18 @@ export default {
           700: "#c62828",
           800: "#b71c1c",
           900: "#991b1b",
+        },
+        secondary: {
+          50: "#fffbeb",
+          100: "#fef3c7",
+          200: "#fde68a",
+          300: "#fcd34d",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          600: "#d97706",
+          700: "#b45309",
+          800: "#92400e",
+          900: "#78350f",
         },
         dark: {
           50: "#f8fafc",
@@ -54,6 +54,9 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+      },
+      borderRadius: {
+        "4xl": "2rem",
       },
     },
   },
