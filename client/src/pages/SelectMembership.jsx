@@ -1,6 +1,7 @@
 // Halaman Pilih Membership
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { selectMembership, getMe } from "../services/authService";
 import Button from "../components/common/Button";
@@ -41,30 +42,33 @@ const SelectMembership = () => {
     {
       type: "A",
       name: "Free",
+      price: "Gratis",
       description: "Cocok untuk pemula",
       articles: 3,
       videos: 3,
-      color: "border-gray-300 hover:border-gray-400",
-      selected: "border-gray-500 bg-gray-50",
+      color: "border-dark-200 hover:border-dark-400",
+      selected: "border-dark-500 bg-dark-50 ring-2 ring-dark-500",
     },
     {
       type: "B",
       name: "Basic",
+      price: "Rp 99K/bln",
       description: "Untuk trader aktif",
       articles: 10,
       videos: 10,
-      color: "border-primary-300 hover:border-primary-400",
-      selected: "border-primary-500 bg-primary-50",
+      color: "border-primary-200 hover:border-primary-400",
+      selected: "border-primary-500 bg-primary-50 ring-2 ring-primary-500",
       popular: true,
     },
     {
       type: "C",
       name: "Premium",
+      price: "Rp 199K/bln",
       description: "Full akses tanpa batas",
       articles: "Unlimited",
       videos: "Unlimited",
-      color: "border-yellow-300 hover:border-yellow-400",
-      selected: "border-yellow-500 bg-yellow-50",
+      color: "border-accent-200 hover:border-accent-400",
+      selected: "border-accent-500 bg-accent-50 ring-2 ring-accent-500",
     },
   ];
 
@@ -91,41 +95,72 @@ const SelectMembership = () => {
     return <Loader.FullPage />;
   }
 
+  // Animasi
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-dark-50 to-dark-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-800">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-10"
+        >
+          <img
+            src="/astronacci-logo.svg"
+            alt="Astronacci"
+            className="w-16 h-16 mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-bold text-dark-800">
             Pilih Tipe Membership
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-dark-500 mt-2">
             Pilih sekali saat mendaftar dan tidak bisa diubah
           </p>
-        </div>
+        </motion.div>
 
         {/* Error */}
         {error && (
-          <div className="flex items-center justify-center space-x-2 bg-red-50 text-red-600 p-3 rounded-lg mb-6">
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center justify-center space-x-2 bg-accent-50 text-accent-600 p-3 rounded-xl mb-6 border border-accent-200"
+          >
             <FiAlertCircle />
             <span>{error}</span>
-          </div>
+          </motion.div>
         )}
 
         {/* Membership Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid md:grid-cols-3 gap-6 mb-8"
+        >
           {memberships.map((m) => (
-            <div
+            <motion.div
               key={m.type}
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
               onClick={() => setSelected(m.type)}
               className={`
-                relative bg-white rounded-xl shadow-md border-2 p-6 cursor-pointer transition-all
+                relative bg-white rounded-2xl shadow-md border-2 p-6 cursor-pointer transition-all
                 ${selected === m.type ? m.selected : m.color}
               `}
             >
               {/* Popular badge */}
               {m.popular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-600 text-white px-4 py-1 rounded-full text-sm">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
                   Populer
                 </span>
               )}
@@ -138,33 +173,43 @@ const SelectMembership = () => {
               )}
 
               <div className="text-center">
-                <h3 className="text-xl font-bold">Tipe {m.type}</h3>
-                <p className="text-2xl font-bold text-primary-600 mt-2">
+                <span className="inline-block px-3 py-1 rounded-full bg-dark-100 text-dark-600 text-sm font-medium">
+                  Tipe {m.type}
+                </span>
+                <h3 className="text-2xl font-bold text-dark-800 mt-3">
                   {m.name}
+                </h3>
+                <p className="text-xl font-bold text-primary-500 mt-1">
+                  {m.price}
                 </p>
-                <p className="text-gray-500 text-sm mt-1">{m.description}</p>
+                <p className="text-dark-400 text-sm mt-1">{m.description}</p>
               </div>
 
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                  <span>{m.articles} Artikel Analisis</span>
+                  <span className="text-dark-600">{m.articles} Artikel Analisis</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                  <span>{m.videos} Video Tutorial</span>
+                  <span className="text-dark-600">{m.videos} Video Tutorial</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                  <span>Akses Dashboard</span>
+                  <span className="text-dark-600">Akses Dashboard</span>
                 </li>
               </ul>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Submit Button */}
-        <div className="text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-center"
+        >
           <Button
             onClick={handleSubmit}
             disabled={!selected || loading}
@@ -172,10 +217,10 @@ const SelectMembership = () => {
           >
             {loading ? "Memproses..." : "Konfirmasi Pilihan"}
           </Button>
-          <p className="text-sm text-gray-500 mt-4">
-            ⚠️ Tipe membership tidak bisa diubah setelah dipilih
+          <p className="text-sm text-dark-400 mt-4">
+            Tipe membership tidak bisa diubah setelah dipilih
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,23 +1,23 @@
 // Komponen Badge untuk kategori/label
 const Badge = ({ children, variant = "default", className = "" }) => {
   const variants = {
-    default: "bg-gray-100 text-gray-800",
-    primary: "bg-primary-100 text-primary-800",
-    success: "bg-green-100 text-green-800",
-    warning: "bg-yellow-100 text-yellow-800",
-    danger: "bg-red-100 text-red-800",
+    default: "bg-dark-100 text-dark-600",
+    primary: "bg-primary-100 text-primary-700",
+    success: "bg-green-100 text-green-700",
+    warning: "bg-amber-100 text-amber-700",
+    danger: "bg-accent-100 text-accent-700",
     // Untuk kategori konten
-    saham: "bg-blue-100 text-blue-800",
-    crypto: "bg-purple-100 text-purple-800",
-    forex: "bg-green-100 text-green-800",
-    teknikal: "bg-orange-100 text-orange-800",
-    fundamental: "bg-teal-100 text-teal-800",
+    saham: "bg-primary-100 text-primary-700",
+    crypto: "bg-accent-100 text-accent-700",
+    forex: "bg-green-100 text-green-700",
+    teknikal: "bg-primary-200 text-primary-800",
+    fundamental: "bg-teal-100 text-teal-700",
   };
 
   return (
     <span
       className={`
-        inline-block px-2.5 py-0.5 rounded-full text-xs font-medium
+        inline-block px-3 py-1 rounded-full text-xs font-semibold
         ${variants[variant.toLowerCase()] || variants.default}
         ${className}
       `}

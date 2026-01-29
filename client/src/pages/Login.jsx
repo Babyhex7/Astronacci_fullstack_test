@@ -1,6 +1,7 @@
 // Halaman Login
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { login as loginAPI } from "../services/authService";
 import Button from "../components/common/Button";
@@ -44,15 +45,25 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="bg-white rounded-xl shadow-md p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-dark-50 to-dark-100 py-12 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="max-w-md w-full"
+      >
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-dark-100">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800">
+            <img
+              src="/astronacci-logo.svg"
+              alt="Astronacci"
+              className="w-16 h-16 mx-auto mb-4"
+            />
+            <h1 className="text-2xl font-bold text-dark-800">
               Masuk ke Astronacci
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-dark-500 mt-2">
               Akses konten trading dan research
             </p>
           </div>
@@ -62,50 +73,54 @@ const Login = () => {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div className="flex-1 border-t border-gray-300" />
-            <span className="px-4 text-gray-500 text-sm">atau</span>
-            <div className="flex-1 border-t border-gray-300" />
+            <div className="flex-1 border-t border-dark-200" />
+            <span className="px-4 text-dark-400 text-sm">atau</span>
+            <div className="flex-1 border-t border-dark-200" />
           </div>
 
           {/* Error */}
           {error && (
-            <div className="flex items-center space-x-2 bg-red-50 text-red-600 p-3 rounded-lg mb-4">
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center space-x-2 bg-accent-50 text-accent-600 p-3 rounded-lg mb-4 border border-accent-200"
+            >
               <FiAlertCircle />
               <span>{error}</span>
-            </div>
+            </motion.div>
           )}
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-dark-700 mb-1">
                 Email
               </label>
               <div className="relative">
-                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full pl-10 pr-4 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                   placeholder="email@contoh.com"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-dark-700 mb-1">
                 Password
               </label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full pl-10 pr-4 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -117,14 +132,17 @@ const Login = () => {
           </form>
 
           {/* Footer */}
-          <p className="text-center text-gray-600 mt-6">
+          <p className="text-center text-dark-500 mt-6">
             Belum punya akun?{" "}
-            <Link to="/register" className="text-primary-600 hover:underline">
+            <Link
+              to="/register"
+              className="text-primary-500 font-semibold hover:text-primary-600 transition-colors"
+            >
               Daftar sekarang
             </Link>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

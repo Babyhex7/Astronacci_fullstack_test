@@ -9,19 +9,22 @@ const Button = ({
   fullWidth = false,
   className = "",
 }) => {
-  // Variasi warna
+  // Variasi warna (warna brand Astronacci)
   const variants = {
-    primary: "bg-primary-600 hover:bg-primary-700 text-white",
-    secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
-    danger: "bg-red-600 hover:bg-red-700 text-white",
-    outline: "border-2 border-primary-600 text-primary-600 hover:bg-primary-50",
+    primary:
+      "bg-gradient-to-r from-primary-500 to-accent-500 hover:shadow-lg hover:shadow-primary-500/30 text-white",
+    secondary: "bg-dark-100 hover:bg-dark-200 text-dark-700",
+    danger: "bg-accent-600 hover:bg-accent-700 text-white",
+    outline:
+      "border-2 border-primary-500 text-primary-500 hover:bg-primary-50",
+    ghost: "text-dark-600 hover:bg-dark-100",
   };
 
   // Variasi ukuran
   const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
+    sm: "px-4 py-2 text-sm",
+    md: "px-5 py-2.5 text-base",
+    lg: "px-8 py-3.5 text-lg",
   };
 
   return (
@@ -34,7 +37,7 @@ const Button = ({
         ${sizes[size]}
         ${fullWidth ? "w-full" : ""}
         ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-        rounded-lg font-medium transition-colors duration-200
+        rounded-xl font-semibold transition-all duration-300
         focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
         ${className}
       `}

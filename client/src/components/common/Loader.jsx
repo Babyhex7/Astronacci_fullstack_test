@@ -11,7 +11,7 @@ const Loader = ({ size = "md", className = "" }) => {
       <div
         className={`
           ${sizes[size]}
-          border-4 border-primary-200 border-t-primary-600
+          border-4 border-primary-200 border-t-primary-500
           rounded-full animate-spin
         `}
       />
@@ -21,7 +21,12 @@ const Loader = ({ size = "md", className = "" }) => {
 
 // Loader full page
 Loader.FullPage = () => (
-  <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+  <div className="fixed inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+    <img
+      src="/astronacci-logo.svg"
+      alt="Loading"
+      className="w-16 h-16 mb-4 animate-pulse"
+    />
     <Loader size="lg" />
   </div>
 );
