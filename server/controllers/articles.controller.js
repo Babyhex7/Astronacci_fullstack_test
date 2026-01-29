@@ -1,10 +1,28 @@
 // Controller Articles: List, Detail, Akses
 const { Article, UserContentHistory } = require("../models");
+const { Op } = require("sequelize");
 
-// GET /api/articles - Ambil semua artikel
+// GET /api/articles - Ambil semua artikel dengan filter dan search
 exports.getAllArticles = async (req, res) => {
   try {
+    const { search, category } = req.query;
+    const whereClause = {};
+
+    // Filter berdasarkan search (title atau content)
+    if (search && search.trim()) {
+      whereClause[Op.or] = [
+        { title: { [Op.like]: `%${search}%` } },
+        { content: { [Op.like]: `%${search}%` } },
+      ];
+    }
+
+    // Filter berdasarkan category
+    if (category && category !== "all" && category.trim()) {
+      whereClause.category = category;
+    }
+
     const articles = await Article.findAll({
+      where: whereClause,
       order: [["created_at", "DESC"]],
     });
 

@@ -116,14 +116,16 @@ const Profile = () => {
                           Bergabung Sejak
                         </p>
                         <p className="text-sm text-dark-700 font-medium">
-                          {new Date(user?.created_at).toLocaleDateString(
-                            "id-ID",
-                            {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            },
-                          )}
+                          {user?.created_at
+                            ? new Date(user.created_at).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                },
+                              )
+                            : "Tidak tersedia"}
                         </p>
                       </div>
                     </div>

@@ -7,11 +7,12 @@ import { login as loginAPI } from "../services/authService";
 import Button from "../components/common/Button";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
 import Loader from "../components/common/Loader";
-import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
+import { FiMail, FiLock, FiAlertCircle, FiEye, FiEyeOff } from "react-icons/fi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { login, isAuthenticated, user, loading: authLoading } = useAuth();
@@ -22,12 +23,14 @@ const Login = () => {
   useEffect(() => {
     // Tunggu auth check selesai
     if (authLoading) return;
-    
+
     // Jika sudah authenticated, redirect
     if (isAuthenticated && user) {
       const hasMembership = user?.membership_id || user?.membership;
       if (hasMembership) {
-        navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
+        navigate(location.state?.from?.pathname || "/dashboard", {
+          replace: true,
+        });
       } else {
         navigate("/select-membership", { replace: true });
       }
@@ -135,13 +138,20 @@ const Login = () => {
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  className="w-full pl-10 pr-12 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 hover:text-dark-600 transition-colors"
+                >
+                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                </button>
               </div>
             </div>
 

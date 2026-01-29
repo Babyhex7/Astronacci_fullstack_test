@@ -10,18 +10,39 @@ import { FiSearch, FiFileText } from "react-icons/fi";
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
+  const [allArticles, setAllArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Fetch artikel saat mount
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Fetch artikel saat mount dan saat filter/debouncedSearch berubah
   useEffect(() => {
     fetchArticles();
+  }, [debouncedSearch, filter]);
+
+  // Fetch semua artikel untuk kategori (tanpa filter)
+  useEffect(() => {
+    fetchAllArticles();
   }, []);
 
   const fetchArticles = async () => {
+    setLoading(true);
     try {
-      const data = await getArticles();
+      const params = {};
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (filter !== "all") params.category = filter;
+
+      const data = await getArticles(params);
       setArticles(data.articles || []);
     } catch (error) {
       console.error("Error fetching articles:", error);
@@ -30,19 +51,18 @@ const Articles = () => {
     }
   };
 
-  // Filter artikel
-  const filteredArticles = articles.filter((article) => {
-    const matchSearch = article.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchFilter =
-      filter === "all" || article.category?.toLowerCase() === filter;
-    return matchSearch && matchFilter;
-  });
+  const fetchAllArticles = async () => {
+    try {
+      const data = await getArticles();
+      setAllArticles(data.articles || []);
+    } catch (error) {
+      console.error("Error fetching all articles:", error);
+    }
+  };
 
-  // Get unique categories
+  // Get unique categories dari allArticles
   const categories = [
-    ...new Set(articles.map((a) => a.category).filter(Boolean)),
+    ...new Set(allArticles.map((a) => a.category).filter(Boolean)),
   ];
 
   // Animasi
@@ -83,7 +103,7 @@ const Articles = () => {
               <div className="flex flex-wrap gap-6">
                 <div>
                   <div className="text-3xl font-bold text-primary-500">
-                    {articles.length}
+                    {allArticles.length}
                   </div>
                   <div className="text-sm text-dark-400">Total Artikel</div>
                 </div>
@@ -146,7 +166,7 @@ const Articles = () => {
         </motion.div>
 
         {/* Articles Grid */}
-        {filteredArticles.length === 0 ? (
+        {articles.length === 0 ? (
           <div className="text-center py-16">
             <FiFileText className="w-16 h-16 mx-auto text-dark-300 mb-4" />
             <p className="text-dark-500">Tidak ada artikel ditemukan</p>
@@ -158,7 +178,7 @@ const Articles = () => {
             animate="visible"
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredArticles.map((article) => (
+            {articles.map((article) => (
               <motion.div key={article.id} variants={itemVariants}>
                 <Link to={`/articles/${article.id}`}>
                   <Card hover className="h-full">

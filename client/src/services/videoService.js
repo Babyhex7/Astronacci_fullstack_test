@@ -2,8 +2,8 @@
 import api from "./api";
 
 // Get semua video
-export const getVideos = async () => {
-  const response = await api.get("/videos");
+export const getVideos = async (params = {}) => {
+  const response = await api.get("/videos", { params });
   return response.data;
 };
 

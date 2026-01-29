@@ -34,9 +34,9 @@ const Dashboard = () => {
   const getMembershipInfo = () => {
     const type = membership?.type || "A";
     const info = {
-      A: { name: "Free", color: "default", limit: 3 },
-      B: { name: "Basic", color: "primary", limit: 10 },
-      C: { name: "Premium", color: "warning", limit: -1 },
+      A: { name: "Free", color: "default-solid", limit: 3 },
+      B: { name: "Basic", color: "primary-solid", limit: 10 },
+      C: { name: "Premium", color: "warning-solid", limit: -1 },
     };
     return info[type] || info.A;
   };

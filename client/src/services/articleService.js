@@ -2,8 +2,8 @@
 import api from "./api";
 
 // Get semua artikel
-export const getArticles = async () => {
-  const response = await api.get("/articles");
+export const getArticles = async (params = {}) => {
+  const response = await api.get("/articles", { params });
   return response.data;
 };
 

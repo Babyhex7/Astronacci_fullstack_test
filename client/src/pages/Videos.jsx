@@ -10,18 +10,39 @@ import { FiSearch, FiClock, FiPlay } from "react-icons/fi";
 
 const Videos = () => {
   const [videos, setVideos] = useState([]);
+  const [allVideos, setAllVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Fetch video saat mount
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  // Fetch video saat mount dan saat filter/debouncedSearch berubah
   useEffect(() => {
     fetchVideos();
+  }, [debouncedSearch, filter]);
+
+  // Fetch semua video untuk kategori (tanpa filter)
+  useEffect(() => {
+    fetchAllVideos();
   }, []);
 
   const fetchVideos = async () => {
+    setLoading(true);
     try {
-      const data = await getVideos();
+      const params = {};
+      if (debouncedSearch) params.search = debouncedSearch;
+      if (filter !== "all") params.category = filter;
+
+      const data = await getVideos(params);
       setVideos(data.videos || []);
     } catch (error) {
       console.error("Error fetching videos:", error);
@@ -30,19 +51,18 @@ const Videos = () => {
     }
   };
 
-  // Filter video
-  const filteredVideos = videos.filter((video) => {
-    const matchSearch = video.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchFilter =
-      filter === "all" || video.category?.toLowerCase() === filter;
-    return matchSearch && matchFilter;
-  });
+  const fetchAllVideos = async () => {
+    try {
+      const data = await getVideos();
+      setAllVideos(data.videos || []);
+    } catch (error) {
+      console.error("Error fetching all videos:", error);
+    }
+  };
 
-  // Get unique categories
+  // Get unique categories dari allVideos
   const categories = [
-    ...new Set(videos.map((v) => v.category).filter(Boolean)),
+    ...new Set(allVideos.map((v) => v.category).filter(Boolean)),
   ];
 
   // Animasi
@@ -83,7 +103,7 @@ const Videos = () => {
               <div className="flex flex-wrap gap-6">
                 <div>
                   <div className="text-3xl font-bold text-secondary-500">
-                    {videos.length}
+                    {allVideos.length}
                   </div>
                   <div className="text-sm text-dark-400">Total Video</div>
                 </div>
@@ -146,7 +166,7 @@ const Videos = () => {
         </motion.div>
 
         {/* Videos Grid */}
-        {filteredVideos.length === 0 ? (
+        {videos.length === 0 ? (
           <div className="text-center py-16">
             <FiPlay className="w-16 h-16 mx-auto text-dark-300 mb-4" />
             <p className="text-dark-500">Tidak ada video ditemukan</p>
@@ -158,7 +178,7 @@ const Videos = () => {
             animate="visible"
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {filteredVideos.map((video) => (
+            {videos.map((video) => (
               <motion.div key={video.id} variants={itemVariants}>
                 <Link to={`/videos/${video.id}`}>
                   <Card hover className="h-full">

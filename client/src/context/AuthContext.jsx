@@ -1,5 +1,12 @@
 // Context untuk Auth state management
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { getMe, logout as logoutService } from "../services/authService";
 
 // Buat context
@@ -54,15 +61,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Stabilkan value dengan useMemo
-  const value = useMemo(() => ({
-    user,
-    loading,
-    isAuthenticated,
-    login,
-    logout,
-    updateUser,
-    checkAuth,
-  }), [user, loading, isAuthenticated, login, logout, updateUser, checkAuth]);
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated,
+      login,
+      logout,
+      updateUser,
+      checkAuth,
+    }),
+    [user, loading, isAuthenticated, login, logout, updateUser, checkAuth],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

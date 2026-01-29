@@ -12,18 +12,41 @@ import {
   FiUser,
   FiAlertCircle,
   FiCheckCircle,
+  FiEye,
+  FiEyeOff,
 } from "react-icons/fi";
 
 const Register = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  // Password strength checker
+  const getPasswordStrength = (pwd) => {
+    if (!pwd) return { label: "", color: "", width: "0%" };
+
+    let strength = 0;
+    if (pwd.length >= 6) strength++;
+    if (pwd.length >= 10) strength++;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+    if (/[0-9]/.test(pwd)) strength++;
+    if (/[^A-Za-z0-9]/.test(pwd)) strength++;
+
+    if (strength <= 2)
+      return { label: "Lemah", color: "bg-red-500", width: "33%" };
+    if (strength <= 3)
+      return { label: "Sedang", color: "bg-yellow-500", width: "66%" };
+    return { label: "Kuat", color: "bg-green-500", width: "100%" };
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   // Redirect otomatis jika sudah login
   useEffect(() => {
@@ -159,15 +182,49 @@ const Register = () => {
               <div className="relative">
                 <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-400" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="w-full pl-10 pr-4 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  className="w-full pl-10 pr-12 py-3 border border-dark-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
                   placeholder="Minimal 6 karakter"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-400 hover:text-dark-600 transition-colors"
+                >
+                  {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                </button>
               </div>
+              {/* Password Strength Indicator */}
+              {password && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs text-dark-500">
+                      Kekuatan Password:
+                    </span>
+                    <span
+                      className={`text-xs font-medium ${
+                        passwordStrength.label === "Lemah"
+                          ? "text-red-600"
+                          : passwordStrength.label === "Sedang"
+                            ? "text-yellow-600"
+                            : "text-green-600"
+                      }`}
+                    >
+                      {passwordStrength.label}
+                    </span>
+                  </div>
+                  <div className="w-full bg-dark-100 rounded-full h-1.5">
+                    <div
+                      className={`${passwordStrength.color} h-1.5 rounded-full transition-all duration-300`}
+                      style={{ width: passwordStrength.width }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button type="submit" fullWidth disabled={loading}>
