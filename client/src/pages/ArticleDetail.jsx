@@ -44,12 +44,12 @@ const ArticleDetail = () => {
   if (accessDenied) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
-          <FiLock className="w-16 h-16 mx-auto text-yellow-500 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+        <div className="bg-white border border-dark-200 rounded-xl p-8 text-center">
+          <FiLock className="w-16 h-16 mx-auto text-dark-400 mb-4" />
+          <h2 className="text-2xl font-bold text-dark-800 mb-2">
             Batas Akses Tercapai
           </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <p className="text-dark-600 mb-6">{error}</p>
           <div className="flex justify-center gap-4">
             <Button onClick={() => navigate(-1)} variant="secondary">
               Kembali
