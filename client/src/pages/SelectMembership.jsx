@@ -119,11 +119,11 @@ const SelectMembership = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-10"
         >
-          <img
-            src="/astronacci-logo.svg"
-            alt="Astronacci"
-            className="w-16 h-16 mx-auto mb-4"
-          />
+          <div className="w-fit mx-auto mb-4 px-4 py-2 rounded-xl bg-dark-50 border border-dark-100">
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
+              Astronacci
+            </span>
+          </div>
           <h1 className="text-3xl font-bold text-dark-800">
             Pilih Tipe Membership
           </h1>

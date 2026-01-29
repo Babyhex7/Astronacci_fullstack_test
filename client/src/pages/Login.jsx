@@ -114,12 +114,10 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-dark-100">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-primary-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-              <img
-                src="/astronacci-logo.svg"
-                alt="Astronacci"
-                className="w-12 h-12"
-              />
+            <div className="w-fit mx-auto mb-4 px-4 py-2 rounded-xl bg-dark-50 border border-dark-100">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
+                Astronacci
+              </span>
             </div>
             <h1 className="text-2xl font-bold text-dark-800">
               Masuk ke Astronacci

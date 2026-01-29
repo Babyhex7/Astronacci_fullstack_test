@@ -63,21 +63,48 @@ const Videos = () => {
   return (
     <div className="min-h-screen bg-dark-50">
       {/* Header */}
-      <div className="bg-gradient-to-br from-accent-500 to-accent-600 text-white py-12">
+      <div className="relative bg-white border-b border-dark-200 py-10">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center space-x-3"
-          >
-            <FiPlay className="w-8 h-8" />
-            <div>
-              <h1 className="text-3xl font-bold">Video Tutorial</h1>
-              <p className="text-accent-100 mt-1">
-                Pelajari teknik trading dari video tutorial lengkap
+          <div className="flex items-center gap-8">
+            {/* Content */}
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-secondary-50 text-secondary-600 rounded-lg text-sm font-medium mb-3">
+                <span>Video Learning</span>
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-dark-800 mb-3">
+                Video Tutorial Trading
+              </h1>
+              <p className="text-lg text-dark-500 mb-6 max-w-3xl">
+                Pelajari strategi dan teknik trading dari para profesional melalui video tutorial HD berkualitas tinggi.
               </p>
+              
+              {/* Stats */}
+              <div className="flex flex-wrap gap-6">
+                <div>
+                  <div className="text-3xl font-bold text-secondary-500">{videos.length}</div>
+                  <div className="text-sm text-dark-400">Total Video</div>
+                </div>
+                <div className="border-l border-dark-200 pl-6">
+                  <div className="text-3xl font-bold text-dark-800">HD</div>
+                  <div className="text-sm text-dark-400">High Quality</div>
+                </div>
+                <div className="border-l border-dark-200 pl-6">
+                  <div className="text-3xl font-bold text-dark-800">Pro</div>
+                  <div className="text-sm text-dark-400">Expert Trainer</div>
+                </div>
+              </div>
             </div>
-          </motion.div>
+
+            {/* 3D Icon */}
+            <div className="relative group hidden lg:block">
+              <div className="w-32 h-32 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-2xl flex items-center justify-center shadow-xl shadow-secondary-500/30 transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                <FiPlay className="w-16 h-16 text-white" />
+              </div>
+              {/* 3D effect layers */}
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary-300 to-secondary-500 rounded-2xl -z-10 translate-x-1.5 translate-y-1.5 opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-br from-secondary-200 to-secondary-400 rounded-2xl -z-20 translate-x-3 translate-y-3 opacity-40" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -96,7 +123,7 @@ const Videos = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari video..."
-              className="w-full pl-12 pr-4 py-3 bg-white border border-dark-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all"
+              className="w-full pl-12 pr-4 py-3 bg-white border border-dark-200 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500 transition-all"
             />
           </div>
 
@@ -104,7 +131,7 @@ const Videos = () => {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="px-4 py-3 bg-white border border-dark-200 rounded-xl focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all"
+            className="px-4 py-3 bg-white border border-dark-200 rounded-xl focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500 transition-all"
           >
             <option value="all">Semua Kategori</option>
             {categories.map((cat) => (
@@ -137,7 +164,7 @@ const Videos = () => {
                       {/* Play overlay */}
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                         <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                          <div className="w-0 h-0 border-l-[20px] border-l-accent-500 border-y-[12px] border-y-transparent ml-1" />
+                          <div className="w-0 h-0 border-l-[20px] border-l-secondary-500 border-y-[12px] border-y-transparent ml-1" />
                         </div>
                       </div>
                       {/* Duration */}

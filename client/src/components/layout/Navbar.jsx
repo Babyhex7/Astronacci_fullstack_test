@@ -21,16 +21,9 @@ const Navbar = () => {
     <nav className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-dark-100">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center">
-              <img
-                src="/astronacci-logo.svg"
-                alt="Astronacci"
-                className="w-7 h-7"
-              />
-            </div>
-            <span className="text-xl font-bold text-primary-500">
+          {/* Logo - Text Only */}
+          <Link to="/" className="flex items-center">
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
               Astronacci
             </span>
           </Link>
@@ -190,7 +183,7 @@ const Navbar = () => {
                           setIsMenuOpen(false);
                           handleLogout();
                         }}
-                        className="w-full text-left px-4 py-3 text-accent-600 hover:bg-accent-50 rounded-lg font-medium flex items-center space-x-2"
+                        className="w-full text-left px-4 py-3 text-primary-600 hover:bg-primary-50 rounded-lg font-medium flex items-center space-x-2"
                       >
                         <FiLogOut className="w-5 h-5" />
                         <span>Logout</span>
@@ -208,7 +201,7 @@ const Navbar = () => {
                     </Link>
                     <Link
                       to="/register"
-                      className="block px-4 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white rounded-lg text-center font-semibold"
+                      className="block px-4 py-3 bg-gradient-to-r from-primary-500 to-secondary-500 text-white rounded-lg text-center font-semibold"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Daftar Sekarang

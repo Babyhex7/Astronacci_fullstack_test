@@ -63,21 +63,48 @@ const Articles = () => {
   return (
     <div className="min-h-screen bg-dark-50">
       {/* Header */}
-      <div className="bg-gradient-to-br from-primary-500 to-primary-600 text-white py-12">
+      <div className="relative bg-white border-b border-dark-200 py-10">
         <div className="max-w-7xl mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex items-center space-x-3"
-          >
-            <FiFileText className="w-8 h-8" />
-            <div>
-              <h1 className="text-3xl font-bold">Artikel Analisis</h1>
-              <p className="text-primary-100 mt-1">
-                Baca analisis market, saham, crypto, dan forex
+          <div className="flex items-center gap-8">
+            {/* Content */}
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg text-sm font-medium mb-3">
+                <span>Analisis Trading</span>
+              </div>
+              <h1 className="text-4xl lg:text-5xl font-bold text-dark-800 mb-3">
+                Artikel Analisis Market
+              </h1>
+              <p className="text-lg text-dark-500 mb-6 max-w-3xl">
+                Dapatkan insight mendalam tentang pergerakan saham, crypto, dan forex dari tim analis profesional kami.
               </p>
+              
+              {/* Stats */}
+              <div className="flex flex-wrap gap-6">
+                <div>
+                  <div className="text-3xl font-bold text-primary-500">{articles.length}</div>
+                  <div className="text-sm text-dark-400">Total Artikel</div>
+                </div>
+                <div className="border-l border-dark-200 pl-6">
+                  <div className="text-3xl font-bold text-dark-800">Daily</div>
+                  <div className="text-sm text-dark-400">Update Rutin</div>
+                </div>
+                <div className="border-l border-dark-200 pl-6">
+                  <div className="text-3xl font-bold text-dark-800">Pro</div>
+                  <div className="text-sm text-dark-400">Analis Expert</div>
+                </div>
+              </div>
             </div>
-          </motion.div>
+
+            {/* 3D Icon */}
+            <div className="relative group hidden lg:block">
+              <div className="w-32 h-32 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center shadow-xl shadow-primary-500/30 transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                <FiFileText className="w-16 h-16 text-white" />
+              </div>
+              {/* 3D effect layers */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-300 to-primary-500 rounded-2xl -z-10 translate-x-1.5 translate-y-1.5 opacity-60" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-200 to-primary-400 rounded-2xl -z-20 translate-x-3 translate-y-3 opacity-40" />
+            </div>
+          </div>
         </div>
       </div>
 

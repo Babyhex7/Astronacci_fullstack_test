@@ -56,9 +56,10 @@ const Dashboard = () => {
     }
   };
 
-  // Info membership
+  // Info membership (prefer data dari stats API, fallback user)
+  const membership = stats?.membership || user?.membership;
   const getMembershipInfo = () => {
-    const type = user?.membership?.type || "A";
+    const type = membership?.type || "A";
     const info = {
       A: { name: "Free", color: "default", limit: 3 },
       B: { name: "Basic", color: "primary", limit: 10 },
@@ -68,13 +69,16 @@ const Dashboard = () => {
   };
 
   const membershipInfo = getMembershipInfo();
-
-  const articleStats = stats?.stats?.articles;
-  const videoStats = stats?.stats?.videos;
-  const articlesAccessed = articleStats?.accessed ?? 0;
-  const videosAccessed = videoStats?.accessed ?? 0;
-  const articleLimit = articleStats?.limit ?? membershipInfo.limit ?? 0;
-  const videoLimit = videoStats?.limit ?? membershipInfo.limit ?? 0;
+  const articleAccessed = stats?.stats?.articles?.accessed ?? 0;
+  const videoAccessed = stats?.stats?.videos?.accessed ?? 0;
+  const articleLimit =
+    stats?.stats?.articles?.limit ??
+    membership?.article_limit ??
+    membershipInfo.limit;
+  const videoLimit =
+    stats?.stats?.videos?.limit ??
+    membership?.video_limit ??
+    membershipInfo.limit;
 
   // Animasi
   const containerVariants = {
@@ -125,7 +129,7 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-dark-400">Membership</p>
                 <p className="text-xl font-bold text-dark-800">
-                  Tipe {user?.membership?.type || "A"}
+                  Tipe {membership?.type || "A"}
                 </p>
               </div>
             </div>
@@ -140,13 +144,13 @@ const Dashboard = () => {
             className="bg-white rounded-2xl shadow-sm p-6 border border-dark-100 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-br from-primary-100 to-accent-100 rounded-xl">
+              <div className="p-3 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-xl">
                 <FiFileText className="w-6 h-6 text-primary-500" />
               </div>
               <div>
                 <p className="text-sm text-dark-400">Artikel Dibaca</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {articlesAccessed}
+                  {articleAccessed}
                   <span className="text-sm text-dark-400 font-normal">
                     /{articleLimit === -1 ? "∞" : articleLimit}
                   </span>
@@ -161,13 +165,13 @@ const Dashboard = () => {
             className="bg-white rounded-2xl shadow-sm p-6 border border-dark-100 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-br from-accent-100 to-primary-100 rounded-xl">
-                <FiPlay className="w-6 h-6 text-accent-500" />
+              <div className="p-3 bg-gradient-to-br from-secondary-100 to-primary-100 rounded-xl">
+                <FiPlay className="w-6 h-6 text-secondary-500" />
               </div>
               <div>
                 <p className="text-sm text-dark-400">Video Ditonton</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {videosAccessed}
+                  {videoAccessed}
                   <span className="text-sm text-dark-400 font-normal">
                     /{videoLimit === -1 ? "∞" : videoLimit}
                   </span>
@@ -182,13 +186,13 @@ const Dashboard = () => {
             className="bg-white rounded-2xl shadow-sm p-6 border border-dark-100 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-br from-primary-200 to-accent-200 rounded-xl">
+              <div className="p-3 bg-gradient-to-br from-primary-200 to-secondary-200 rounded-xl">
                 <FiTrendingUp className="w-6 h-6 text-primary-600" />
               </div>
               <div>
                 <p className="text-sm text-dark-400">Total Konten</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {articlesAccessed + videosAccessed}
+                  {articleAccessed + videoAccessed}
                 </p>
               </div>
             </div>
@@ -206,11 +210,11 @@ const Dashboard = () => {
           <motion.div variants={itemVariants}>
             <Link
               to="/articles"
-              className="block bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-2xl p-6 hover:shadow-xl hover:shadow-primary-500/20 transition-all hover:-translate-y-1"
+              className="block bg-white border-2 border-primary-500 rounded-2xl p-6 hover:shadow-xl hover:shadow-primary-500/20 transition-all hover:-translate-y-1 hover:border-primary-600"
             >
-              <FiFileText className="w-10 h-10 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Artikel Analisis</h3>
-              <p className="text-primary-100">
+              <FiFileText className="w-10 h-10 mb-4 text-primary-500" />
+              <h3 className="text-xl font-bold mb-2 text-dark-800">Artikel Analisis</h3>
+              <p className="text-dark-600">
                 Baca analisis market, saham, crypto, dan forex terbaru
               </p>
             </Link>
@@ -220,11 +224,11 @@ const Dashboard = () => {
           <motion.div variants={itemVariants}>
             <Link
               to="/videos"
-              className="block bg-gradient-to-br from-accent-500 to-accent-600 text-white rounded-2xl p-6 hover:shadow-xl hover:shadow-accent-500/20 transition-all hover:-translate-y-1"
+              className="block bg-white border-2 border-secondary-500 rounded-2xl p-6 hover:shadow-xl hover:shadow-secondary-500/20 transition-all hover:-translate-y-1 hover:border-secondary-600"
             >
-              <FiPlay className="w-10 h-10 mb-4" />
-              <h3 className="text-xl font-bold mb-2">Video Tutorial</h3>
-              <p className="text-accent-100">
+              <FiPlay className="w-10 h-10 mb-4 text-secondary-500" />
+              <h3 className="text-xl font-bold mb-2 text-dark-800">Video Tutorial</h3>
+              <p className="text-dark-600">
                 Pelajari teknik trading dari video tutorial lengkap
               </p>
             </Link>
