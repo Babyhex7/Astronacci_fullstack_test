@@ -1,4 +1,3 @@
-// Halaman Profile - Modern Clean Design
 import { useAuth } from "../context/AuthContext";
 import {
   FiUser,
@@ -12,7 +11,6 @@ import {
 const Profile = () => {
   const { user } = useAuth();
 
-  // Info membership
   const getMembershipInfo = () => {
     const type = user?.membership?.type || "A";
     const info = {
@@ -30,7 +28,6 @@ const Profile = () => {
 
   const membershipInfo = getMembershipInfo();
 
-  // Auth provider display
   const getProviderInfo = () => {
     if (user?.auth_provider === "google")
       return { name: "Google", color: "text-green-600", icon: "G" };

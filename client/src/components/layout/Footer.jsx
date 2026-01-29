@@ -1,4 +1,3 @@
-// Komponen Footer
 import { Link } from "react-router-dom";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 

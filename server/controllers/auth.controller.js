@@ -1,10 +1,8 @@
-// Controller Auth: Register, Login, OAuth, Pilih Membership
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { User, Membership } = require("../models");
 require("dotenv").config();
 
-// Generate JWT Token
 const generateToken = (user) => {
   return jwt.sign(
     {
@@ -18,21 +16,17 @@ const generateToken = (user) => {
   );
 };
 
-// POST /api/auth/register - Register manual (tanpa auto-login)
 exports.register = async (req, res) => {
   const { email, password, full_name } = req.body;
 
   try {
-    // Cek email sudah terdaftar
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Email sudah terdaftar" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Buat user baru (tanpa membership, pilih nanti saat login)
     const user = await User.create({
       email,
       password: hashedPassword,
@@ -41,7 +35,6 @@ exports.register = async (req, res) => {
       membership_id: null,
     });
 
-    // Tidak return token, user harus login manual
     res.status(201).json({
       message: "Registrasi berhasil! Silakan login untuk melanjutkan.",
       user: {
@@ -56,13 +49,11 @@ exports.register = async (req, res) => {
   }
 };
 
-// POST /api/auth/select-membership - Pilih tipe membership (step 2)
 exports.selectMembership = async (req, res) => {
   const userId = req.user.id;
-  const { membershipType } = req.body; // 'A', 'B', atau 'C'
+  const { membershipType } = req.body;
 
   try {
-    // Cari membership berdasarkan tipe
     const membership = await Membership.findOne({
       where: { type: membershipType },
     });
@@ -70,7 +61,6 @@ exports.selectMembership = async (req, res) => {
       return res.status(400).json({ message: "Tipe membership tidak valid" });
     }
 
-    // Cek user sudah punya membership
     const user = await User.findByPk(userId);
     if (user.membership_id) {
       return res
@@ -78,10 +68,8 @@ exports.selectMembership = async (req, res) => {
         .json({ message: "Anda sudah memiliki tipe membership" });
     }
 
-    // Update membership user
     await user.update({ membership_id: membership.id });
 
-    // Generate token baru dengan membership
     const newToken = generateToken({
       ...user.dataValues,
       membership_id: membership.id,
@@ -106,12 +94,10 @@ exports.selectMembership = async (req, res) => {
   }
 };
 
-// POST /api/auth/login - Login manual
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Cari user
     const user = await User.findOne({
       where: { email },
       include: { model: Membership, as: "membership" },
@@ -121,20 +107,17 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Email atau password salah" });
     }
 
-    // Cek apakah user register via OAuth
     if (user.auth_provider !== "local") {
       return res.status(401).json({
         message: `Akun ini terdaftar via ${user.auth_provider}. Silakan login dengan ${user.auth_provider}.`,
       });
     }
 
-    // Verifikasi password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Email atau password salah" });
     }
 
-    // Generate token dan set ke HTTP-only cookie
     const token = generateToken(user);
 
     res.cookie("auth_token", token, {
@@ -155,7 +138,7 @@ exports.login = async (req, res) => {
         membership: user.membership,
         needSelectMembership: !user.membership_id,
       },
-      token, // dikirim untuk kompatibilitas, tapi frontend pakai cookie
+      token,
     });
   } catch (err) {
     console.error("Error login:", err);
@@ -163,7 +146,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// GET /api/auth/me - Get current user
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -189,39 +171,27 @@ exports.getMe = async (req, res) => {
   }
 };
 
-// OAuth Callback Handler (Google/Facebook) - SECURE VERSION
 exports.oauthCallback = (req, res) => {
   const user = req.user;
-
-  console.log("[OAuth Callback] User:", user?.email);
-  console.log("[OAuth Callback] membership_id:", user?.membership_id);
-  console.log("[OAuth Callback] CLIENT_URL:", process.env.CLIENT_URL);
-
   const token = generateToken(user);
 
-  // Set secure HTTP-only cookie instead of URL token
   res.cookie("auth_token", token, {
-    httpOnly: true, // Tidak bisa diakses JavaScript - XSS protection
-    secure: process.env.NODE_ENV === "production", // HTTPS only di production
-    sameSite: "lax", // CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
-    path: "/", // Available untuk semua routes
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
   });
 
-  // Redirect tanpa token di URL - AMAN
   const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
   const redirectUrl = user.membership_id
     ? `${clientUrl}/dashboard`
     : `${clientUrl}/select-membership`;
 
-  console.log("[OAuth Callback] Secure redirect to:", redirectUrl);
-
   res.redirect(redirectUrl);
 };
 
-// POST /api/auth/logout - Secure logout (clear HTTP-only cookie)
 exports.logout = (req, res) => {
-  // Clear the HTTP-only auth cookie
   res.clearCookie("auth_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

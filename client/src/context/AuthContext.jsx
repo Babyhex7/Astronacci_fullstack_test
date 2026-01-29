@@ -1,4 +1,3 @@
-// Context untuk Auth state management
 import {
   createContext,
   useContext,
@@ -9,23 +8,19 @@ import {
 } from "react";
 import { getMe, logout as logoutService } from "../services/authService";
 
-// Buat context
 const AuthContext = createContext(null);
 
-// Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Cek autentikasi dari cookie/token (useCallback untuk stabilitas)
   const checkAuth = useCallback(async () => {
     try {
       const data = await getMe();
       setUser(data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      // Token/cookie invalid - ini normal untuk user yang belum login
       setUser(null);
       setIsAuthenticated(false);
     } finally {
@@ -33,18 +28,15 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Cek token saat mount (hanya sekali)
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // Login: set user (token disimpan di cookie HTTP-only oleh server)
   const login = useCallback((userData) => {
     setUser(userData);
     setIsAuthenticated(true);
   }, []);
 
-  // Logout: clear cookie di server
   const logout = useCallback(async () => {
     try {
       await logoutService();
@@ -55,12 +47,10 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   }, []);
 
-  // Update user (setelah select membership)
   const updateUser = useCallback((userData) => {
     setUser(userData);
   }, []);
 
-  // Stabilkan value dengan useMemo
   const value = useMemo(
     () => ({
       user,
@@ -77,7 +67,6 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Custom hook untuk akses auth context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

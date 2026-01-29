@@ -1,4 +1,3 @@
-// Halaman Register
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -28,7 +27,6 @@ const Register = () => {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  // Password strength checker
   const getPasswordStrength = (pwd) => {
     if (!pwd) return { label: "", color: "", width: "0%" };
 
@@ -48,7 +46,6 @@ const Register = () => {
 
   const passwordStrength = getPasswordStrength(password);
 
-  // Redirect otomatis jika sudah login
   useEffect(() => {
     if (isAuthenticated && user) {
       const hasMembership = user?.membership_id || user?.membership;
@@ -60,7 +57,6 @@ const Register = () => {
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -70,7 +66,6 @@ const Register = () => {
     try {
       const data = await registerAPI(email, password, fullName);
       setSuccess(data.message || "Registrasi berhasil! Silakan login.");
-      // Redirect ke login setelah 2 detik
       setTimeout(() => {
         navigate("/login");
       }, 2000);

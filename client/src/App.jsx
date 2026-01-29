@@ -1,15 +1,8 @@
-// Root component dengan routing
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-
-// Layout
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
-
-// Auth
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-
-// Pages
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -26,21 +19,13 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <div className="flex flex-col min-h-screen bg-white">
-          {/* Navbar */}
           <Navbar />
-
-          {/* Main content */}
           <main className="flex-1">
             <Routes>
-              {/* Public routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-
-              {/* Select membership - public untuk OAuth redirect tapi perlu token */}
               <Route path="/select-membership" element={<SelectMembership />} />
-
-              {/* Protected routes */}
               <Route
                 path="/dashboard"
                 element={

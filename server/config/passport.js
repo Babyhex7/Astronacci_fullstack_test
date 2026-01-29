@@ -1,16 +1,13 @@
-// Konfigurasi Passport (Google & Facebook OAuth)
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const { User, Membership } = require("../models");
 require("dotenv").config();
 
-// Serialize user ke session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user dari session
 passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findByPk(id, {
@@ -22,7 +19,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-// Google OAuth Strategy - hanya aktif jika credentials tersedia
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
   passport.use(
     new GoogleStrategy(
@@ -33,13 +29,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Cari user berdasarkan provider_id (include membership untuk cek)
           let user = await User.findOne({
             where: { provider_id: profile.id, auth_provider: "google" },
             include: [{ model: Membership, as: "membership" }],
           });
 
-          // Jika belum ada, buat user baru (tanpa membership, pilih nanti)
           const isNewUser = !user;
           if (!user) {
             user = await User.create({
@@ -48,15 +42,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
               avatar_url: profile.photos?.[0]?.value || null,
               auth_provider: "google",
               provider_id: profile.id,
-              membership_id: null, // Belum pilih tipe
+              membership_id: null,
             });
           }
 
-          console.log(
-            `[OAuth Google] User: ${user.email}, membership_id: ${user.membership_id}`,
-          );
-
-          // Tambah flag untuk cek apakah user baru
           user.dataValues.isNewUser = isNewUser;
           done(null, user);
         } catch (err) {
@@ -65,12 +54,11 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
       },
     ),
   );
-  console.log("✅ Google OAuth Strategy aktif");
+  console.log("[Passport] Google OAuth aktif");
 } else {
-  console.log("⚠️ Google OAuth tidak dikonfigurasi (GOOGLE_CLIENT_ID kosong)");
+  console.log("[Passport] Google OAuth tidak dikonfigurasi");
 }
 
-// Facebook OAuth Strategy - hanya aktif jika credentials tersedia
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
   passport.use(
     new FacebookStrategy(
@@ -82,7 +70,6 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Cari user dengan include membership
           let user = await User.findOne({
             where: { provider_id: profile.id, auth_provider: "facebook" },
             include: [{ model: Membership, as: "membership" }],
@@ -101,10 +88,6 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
             });
           }
 
-          console.log(
-            `[OAuth Facebook] User: ${user.email}, membership_id: ${user.membership_id}`,
-          );
-
           user.dataValues.isNewUser = isNewUser;
           done(null, user);
         } catch (err) {
@@ -113,11 +96,9 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
       },
     ),
   );
-  console.log("✅ Facebook OAuth Strategy aktif");
+  console.log("[Passport] Facebook OAuth aktif");
 } else {
-  console.log(
-    "⚠️ Facebook OAuth tidak dikonfigurasi (FACEBOOK_APP_ID kosong/xxx)",
-  );
+  console.log("[Passport] Facebook OAuth tidak dikonfigurasi");
 }
 
 module.exports = passport;

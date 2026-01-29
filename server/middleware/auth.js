@@ -1,15 +1,12 @@
-// Middleware verifikasi JWT Token - SECURE VERSION
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const authMiddleware = (req, res, next) => {
-  // Prioritas: Cookie (secure) > Authorization header (backward compatibility)
   let token = req.cookies?.auth_token;
 
-  // Fallback ke Authorization header jika cookie tidak ada
   if (!token) {
     const authHeader = req.headers["authorization"];
-    token = authHeader && authHeader.split(" ")[1]; // Format: "Bearer <token>"
+    token = authHeader && authHeader.split(" ")[1];
   }
 
   if (!token) {
@@ -17,9 +14,8 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    // Verifikasi token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Simpan data user ke request
+    req.user = decoded;
     next();
   } catch (err) {
     return res.status(401).json({ message: "Token tidak valid atau expired" });

@@ -1,4 +1,3 @@
-// Helper: Format tanggal ke bahasa Indonesia
 export const formatDate = (dateString) => {
   const options = {
     year: "numeric",
@@ -8,12 +7,10 @@ export const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("id-ID", options);
 };
 
-// Format tanggal pendek
 export const formatDateShort = (dateString) => {
   return new Date(dateString).toLocaleDateString("id-ID");
 };
 
-// Format relative time (misal: "2 jam yang lalu")
 export const formatRelativeTime = (dateString) => {
   const now = new Date();
   const date = new Date(dateString);

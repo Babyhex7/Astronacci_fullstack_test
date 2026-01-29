@@ -1,4 +1,3 @@
-// Komponen Button reusable
 const Button = ({
   children,
   onClick,
@@ -9,7 +8,6 @@ const Button = ({
   fullWidth = false,
   className = "",
 }) => {
-  // Variasi warna (warna brand Astronacci - solid)
   const variants = {
     primary: "bg-primary-500 hover:bg-primary-600 text-white",
     secondary: "bg-secondary-500 hover:bg-secondary-600 text-white",
@@ -18,7 +16,6 @@ const Button = ({
     ghost: "text-dark-600 hover:bg-dark-100",
   };
 
-  // Variasi ukuran
   const sizes = {
     sm: "px-4 py-2 text-sm",
     md: "px-5 py-2.5 text-base",

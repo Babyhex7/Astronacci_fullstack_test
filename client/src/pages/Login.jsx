@@ -1,4 +1,3 @@
-// Halaman Login
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -19,12 +18,9 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect setelah login - hanya jika auth check selesai
   useEffect(() => {
-    // Tunggu auth check selesai
     if (authLoading) return;
 
-    // Jika sudah authenticated, redirect
     if (isAuthenticated && user) {
       const hasMembership = user?.membership_id || user?.membership;
       if (hasMembership) {
@@ -37,7 +33,6 @@ const Login = () => {
     }
   }, [authLoading, isAuthenticated, user, navigate, location.state]);
 
-  // Handle submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -45,10 +40,7 @@ const Login = () => {
 
     try {
       const data = await loginAPI(email, password);
-      // Server sudah set cookie HTTP-only; cukup set state user
       login(data.user);
-
-      // Cek perlu select membership
       if (data.user.needSelectMembership) {
         navigate("/select-membership");
       } else {
@@ -61,7 +53,6 @@ const Login = () => {
     }
   };
 
-  // Tampilkan loader saat auth check
   if (authLoading) {
     return <Loader.FullPage />;
   }

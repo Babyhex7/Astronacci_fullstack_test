@@ -1,4 +1,3 @@
-// Komponen Navbar
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { FiMenu, FiX, FiUser, FiLogOut, FiChevronDown } from "react-icons/fi";
@@ -11,7 +10,6 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  // Handle logout
   const handleLogout = () => {
     logout();
     navigate("/");

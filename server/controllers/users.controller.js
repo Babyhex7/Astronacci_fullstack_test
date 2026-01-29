@@ -1,7 +1,5 @@
-// Controller Users: Profile, Stats
 const { User, Membership, UserContentHistory } = require("../models");
 
-// GET /api/users/profile - Ambil profil user
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
@@ -22,12 +20,10 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-// GET /api/users/stats - Statistik akses konten user
 exports.getStats = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    // Ambil user dengan membership
     const user = await User.findByPk(userId, {
       include: { model: Membership, as: "membership" },
     });
@@ -36,21 +32,18 @@ exports.getStats = async (req, res) => {
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    // Hitung artikel yang sudah diakses
     const articlesAccessed = await UserContentHistory.count({
       where: { user_id: userId, content_type: "article" },
       distinct: true,
       col: "content_id",
     });
 
-    // Hitung video yang sudah diakses
     const videosAccessed = await UserContentHistory.count({
       where: { user_id: userId, content_type: "video" },
       distinct: true,
       col: "content_id",
     });
 
-    // Limit berdasarkan membership
     const articleLimit = user.membership?.article_limit || 0;
     const videoLimit = user.membership?.video_limit || 0;
 

@@ -1,4 +1,3 @@
-// Halaman List Video
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -16,21 +15,17 @@ const Videos = () => {
   const [filter, setFilter] = useState("all");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
     }, 500);
-
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch video saat mount dan saat filter/debouncedSearch berubah
   useEffect(() => {
     fetchVideos();
   }, [debouncedSearch, filter]);
 
-  // Fetch semua video untuk kategori (tanpa filter)
   useEffect(() => {
     fetchAllVideos();
   }, []);
@@ -60,12 +55,10 @@ const Videos = () => {
     }
   };
 
-  // Get unique categories dari allVideos
   const categories = [
     ...new Set(allVideos.map((v) => v.category).filter(Boolean)),
   ];
 
-  // Animasi
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.08 } },

@@ -1,4 +1,3 @@
-// Komponen Badge untuk kategori/label
 const Badge = ({ children, variant = "default", className = "" }) => {
   const variants = {
     default: "bg-dark-100 text-dark-600",
@@ -6,11 +5,9 @@ const Badge = ({ children, variant = "default", className = "" }) => {
     success: "bg-green-100 text-green-700",
     warning: "bg-amber-100 text-amber-700",
     danger: "bg-accent-100 text-accent-700",
-    // Solid variants untuk membership
     "primary-solid": "bg-primary-600 text-white",
     "warning-solid": "bg-amber-500 text-white",
     "default-solid": "bg-dark-600 text-white",
-    // Untuk kategori konten
     saham: "bg-primary-100 text-primary-700",
     crypto: "bg-accent-100 text-accent-700",
     forex: "bg-green-100 text-green-700",

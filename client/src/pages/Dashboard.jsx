@@ -1,4 +1,3 @@
-// Halaman Dashboard - SECURE VERSION
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,7 +12,6 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch statistik saat mount
   useEffect(() => {
     fetchStats();
   }, []);
@@ -29,7 +27,6 @@ const Dashboard = () => {
     }
   };
 
-  // Info membership (prefer data dari stats API, fallback user)
   const membership = stats?.membership || user?.membership;
   const getMembershipInfo = () => {
     const type = membership?.type || "A";
@@ -53,7 +50,6 @@ const Dashboard = () => {
     membership?.video_limit ??
     membershipInfo.limit;
 
-  // Animasi
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },

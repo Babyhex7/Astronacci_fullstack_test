@@ -1,4 +1,3 @@
-// Halaman Pilih Membership - SECURE VERSION
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,7 +14,6 @@ const SelectMembership = () => {
   const { updateUser } = useAuth();
   const navigate = useNavigate();
 
-  // Data tipe membership
   const memberships = [
     {
       type: "A",
@@ -51,7 +49,6 @@ const SelectMembership = () => {
     },
   ];
 
-  // Handle submit
   const handleSubmit = async () => {
     if (!selected) return;
 
@@ -69,7 +66,6 @@ const SelectMembership = () => {
     }
   };
 
-  // Animasi
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.1 } },

@@ -1,4 +1,3 @@
-// Halaman Detail Video
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
@@ -16,7 +15,6 @@ const VideoDetail = () => {
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
 
-  // Fetch video saat mount
   useEffect(() => {
     fetchVideo();
   }, [id]);
@@ -41,7 +39,6 @@ const VideoDetail = () => {
     return <Loader.FullPage />;
   }
 
-  // Access denied view
   if (accessDenied) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
@@ -64,7 +61,6 @@ const VideoDetail = () => {
     );
   }
 
-  // Error view
   if (error) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">

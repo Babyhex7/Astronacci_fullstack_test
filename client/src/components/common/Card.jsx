@@ -1,4 +1,3 @@
-// Komponen Card reusable
 const Card = ({ children, className = "", onClick, hover = false }) => {
   return (
     <div
@@ -14,7 +13,6 @@ const Card = ({ children, className = "", onClick, hover = false }) => {
   );
 };
 
-// Sub-komponen untuk Card
 Card.Image = ({ src, alt, className = "" }) => (
   <img
     src={src}

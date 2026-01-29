@@ -1,4 +1,3 @@
-// Halaman Detail Artikel
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getArticleById } from "../services/articleService";
@@ -15,7 +14,6 @@ const ArticleDetail = () => {
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
 
-  // Fetch artikel saat mount
   useEffect(() => {
     fetchArticle();
   }, [id]);
@@ -40,7 +38,6 @@ const ArticleDetail = () => {
     return <Loader.FullPage />;
   }
 
-  // Access denied view
   if (accessDenied) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
@@ -63,7 +60,6 @@ const ArticleDetail = () => {
     );
   }
 
-  // Error view
   if (error) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12 text-center">

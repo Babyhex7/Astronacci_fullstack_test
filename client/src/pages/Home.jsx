@@ -1,4 +1,3 @@
-// Halaman Home (Landing Page) - Modern 3D Effects
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
@@ -15,7 +14,6 @@ import {
 } from "react-icons/fi";
 
 const Home = () => {
-  // Data tipe membership
   const memberships = [
     {
       type: "A",
@@ -55,7 +53,6 @@ const Home = () => {
     },
   ];
 
-  // Animasi variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -71,7 +68,6 @@ const Home = () => {
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
   };
 
-  // Floating animation for background orbs
   const floatAnimation = {
     y: [0, -20, 0],
     transition: {

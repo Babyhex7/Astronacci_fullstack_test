@@ -1,9 +1,7 @@
-// Komponen Modal reusable
 import { useEffect } from "react";
 import { FiX } from "react-icons/fi";
 
 const Modal = ({ isOpen, onClose, title, children, size = "md" }) => {
-  // Tutup dengan ESC
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
