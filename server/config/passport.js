@@ -13,7 +13,9 @@ passport.serializeUser((user, done) => {
 // Deserialize user dari session
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findByPk(id, { include: Membership });
+    const user = await User.findByPk(id, {
+      include: [{ model: Membership, as: "membership" }],
+    });
     done(null, user);
   } catch (err) {
     done(err);
@@ -21,7 +23,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // Google OAuth Strategy - hanya aktif jika credentials tersedia
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'xxx') {
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== "xxx") {
   passport.use(
     new GoogleStrategy(
       {
@@ -58,13 +60,13 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'xxx') {
       },
     ),
   );
-  console.log('✅ Google OAuth Strategy aktif');
+  console.log("✅ Google OAuth Strategy aktif");
 } else {
-  console.log('⚠️ Google OAuth tidak dikonfigurasi (GOOGLE_CLIENT_ID kosong)');
+  console.log("⚠️ Google OAuth tidak dikonfigurasi (GOOGLE_CLIENT_ID kosong)");
 }
 
 // Facebook OAuth Strategy - hanya aktif jika credentials tersedia
-if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== 'xxx') {
+if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== "xxx") {
   passport.use(
     new FacebookStrategy(
       {
@@ -100,9 +102,11 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== 'xxx') {
       },
     ),
   );
-  console.log('✅ Facebook OAuth Strategy aktif');
+  console.log("✅ Facebook OAuth Strategy aktif");
 } else {
-  console.log('⚠️ Facebook OAuth tidak dikonfigurasi (FACEBOOK_APP_ID kosong/xxx)');
+  console.log(
+    "⚠️ Facebook OAuth tidak dikonfigurasi (FACEBOOK_APP_ID kosong/xxx)",
+  );
 }
 
 module.exports = passport;

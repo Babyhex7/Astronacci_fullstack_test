@@ -8,7 +8,7 @@ const checkAccess = require("../middleware/checkAccess");
 // GET /api/articles - Ambil semua artikel (perlu login)
 router.get("/", authMiddleware, articlesController.getAllArticles);
 
-// GET /api/articles/:id - Detail artikel (perlu login + cek akses)
+
 router.get(
   "/:id",
   authMiddleware,

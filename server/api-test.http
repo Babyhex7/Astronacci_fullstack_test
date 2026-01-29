@@ -1,0 +1,188 @@
+### ====================================
+### ASTRONACCI API TESTING
+### Gunakan extension REST Client di VS Code
+### ====================================
+
+### Variables
+@baseUrl = http://localhost:5000/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ0ZXN0MkBhc3Ryb25hY2NpLmNvbSIsIm1lbWJlcnNoaXBJZCI6bnVsbCwicm9sZSI6InVzZXIiLCJpYXQiOjE3Njk2NDkxMTYsImV4cCI6MTc3MDI1MzkxNn0.5saXoD1L9Qox-iF29txsdNtbz-rrp_ELqRYcG_IZ9qY
+
+### ====================================
+### 1. TEST SERVER
+### ====================================
+
+### Test server berjalan
+GET http://localhost:5000
+
+### ====================================
+### 2. AUTH - REGISTER
+### ====================================
+
+### Register User Baru (Step 1)
+# @name registerResponse
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test2@astronacci.com",
+  "password": "password123",
+  "full_name": "Test User Astronacci"
+}
+
+### ====================================
+### 3. AUTH - SELECT MEMBERSHIP
+### ====================================
+
+### Pilih Tipe A (Free) - 3 artikel, 3 video
+POST {{baseUrl}}/auth/select-membership
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "membershipType": "A"
+}
+
+### Pilih Tipe B (Basic) - 10 artikel, 10 video
+# POST {{baseUrl}}/auth/select-membership
+# Content-Type: application/json
+# Authorization: Bearer {{registerResponse.response.body.token}}
+
+# {
+#   "membershipType": "B"
+# }
+
+### Pilih Tipe C (Premium) - Unlimited
+# POST {{baseUrl}}/auth/select-membership
+# Content-Type: application/json
+# Authorization: Bearer {{registerResponse.response.body.token}}
+
+# {
+#   "membershipType": "C"
+# }
+
+### ====================================
+### 4. AUTH - LOGIN
+### ====================================
+
+### Login User
+# @name loginResponse
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test2@astronacci.com",
+  "password": "password123"
+}
+
+### ====================================
+### 5. AUTH - GET CURRENT USER
+### ====================================
+
+### Get Current User (Me)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### ====================================
+### 6. ARTICLES
+### ====================================
+
+### Get All Articles
+GET {{baseUrl}}/articles
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Article by ID (akan dicatat ke history)
+GET {{baseUrl}}/articles/1
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Article 2
+GET {{baseUrl}}/articles/2
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Article 3
+GET {{baseUrl}}/articles/3
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Article 4 (harusnya ditolak untuk Tipe A)
+GET {{baseUrl}}/articles/4
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### ====================================
+### 7. VIDEOS
+### ====================================
+
+### Get All Videos
+GET {{baseUrl}}/videos
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Video by ID
+GET {{baseUrl}}/videos/1
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Video 2
+GET {{baseUrl}}/videos/2
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Video 3
+GET {{baseUrl}}/videos/3
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get Video 4 (harusnya ditolak untuk Tipe A)
+GET {{baseUrl}}/videos/4
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### ====================================
+### 8. USER PROFILE & STATS
+### ====================================
+
+### Get User Profile
+GET {{baseUrl}}/users/profile
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### Get User Stats (statistik akses konten)
+GET {{baseUrl}}/users/stats
+Authorization: Bearer {{loginResponse.response.body.token}}
+
+### ====================================
+### 9. OAUTH ENDPOINTS (Manual di Browser)
+### ====================================
+
+### Google OAuth - Buka di browser:
+### http://localhost:5000/api/auth/google
+
+### Facebook OAuth - Buka di browser:
+### http://localhost:5000/api/auth/facebook
+
+### ====================================
+### 10. ERROR CASES
+### ====================================
+
+### Login dengan email salah
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "tidak@ada.com",
+  "password": "password123"
+}
+
+### Login dengan password salah
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@astronacci.com",
+  "password": "salahpassword"
+}
+
+### Register dengan email yang sudah ada
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@astronacci.com",
+  "password": "password123",
+  "full_name": "Duplicate User"
+}
+
+### Akses tanpa token
+GET {{baseUrl}}/articles

@@ -192,7 +192,7 @@ exports.oauthCallback = (req, res) => {
   // Redirect ke frontend dengan token
   const redirectUrl = user.membership_id
     ? `${process.env.CLIENT_URL}/dashboard?token=${token}`
-    : `${process.env.CLIENT_URL}/select-membership?token=${token}`;
+    : `${process.env.CLIENT_URL}/select-membership?token=${token}&isNew=true`;
 
   res.redirect(redirectUrl);
 };
