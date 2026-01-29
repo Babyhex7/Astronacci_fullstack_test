@@ -1,79 +1,38 @@
 // Halaman Login
 import { useState, useEffect } from "react";
-import {
-  Link,
-  useNavigate,
-  useLocation,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { login as loginAPI, getMe } from "../services/authService";
+import { login as loginAPI } from "../services/authService";
 import Button from "../components/common/Button";
 import SocialLoginButtons from "../components/auth/SocialLoginButtons";
-import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 import Loader from "../components/common/Loader";
+import { FiMail, FiLock, FiAlertCircle } from "react-icons/fi";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [oauthLoading, setOauthLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const { login, isAuthenticated, user } = useAuth();
+  const { login, isAuthenticated, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect setelah login
-  const from = location.state?.from?.pathname || "/dashboard";
-
-  // Redirect otomatis jika sudah login
+  // Redirect setelah login - hanya jika auth check selesai
   useEffect(() => {
+    // Tunggu auth check selesai
+    if (authLoading) return;
+    
+    // Jika sudah authenticated, redirect
     if (isAuthenticated && user) {
       const hasMembership = user?.membership_id || user?.membership;
       if (hasMembership) {
-        navigate("/dashboard", { replace: true });
+        navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
       } else {
         navigate("/select-membership", { replace: true });
       }
     }
-  }, [isAuthenticated, user, navigate]);
-
-  // Handle OAuth token dari URL (jika redirect kesini dengan token)
-  useEffect(() => {
-    const token = searchParams.get("token");
-    if (token) {
-      console.log("[Login] OAuth token ditemukan, redirect...");
-      setOauthLoading(true);
-      // Hapus token dari URL
-      searchParams.delete("token");
-      setSearchParams(searchParams, { replace: true });
-      // Simpan token dan fetch user
-      localStorage.setItem("token", token);
-      getMe()
-        .then((data) => {
-          login(token, data.user);
-          // Navigate akan ditangani oleh useEffect di atas
-        })
-        .catch((err) => {
-          console.error("Error fetching user:", err);
-          setError("Gagal memuat data user");
-          setOauthLoading(false);
-        });
-    }
-  }, [searchParams, setSearchParams, login]);
-
-  // Cek OAuth error dari URL
-  useEffect(() => {
-    const oauthError = searchParams.get("error");
-    if (oauthError === "oauth_failed") {
-      setError(
-        "Login dengan OAuth gagal. Silakan coba lagi atau gunakan email.",
-      );
-    }
-  }, [searchParams]);
+  }, [authLoading, isAuthenticated, user, navigate, location.state]);
 
   // Handle submit form
   const handleSubmit = async (e) => {
@@ -83,13 +42,14 @@ const Login = () => {
 
     try {
       const data = await loginAPI(email, password);
-      login(data.token, data.user);
+      // Server sudah set cookie HTTP-only; cukup set state user
+      login(data.user);
 
       // Cek perlu select membership
       if (data.user.needSelectMembership) {
         navigate("/select-membership");
       } else {
-        navigate(from);
+        navigate(location.state?.from?.pathname || "/dashboard");
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login gagal");
@@ -98,8 +58,8 @@ const Login = () => {
     }
   };
 
-  // Show loader saat OAuth processing
-  if (oauthLoading) {
+  // Tampilkan loader saat auth check
+  if (authLoading) {
     return <Loader.FullPage />;
   }
 

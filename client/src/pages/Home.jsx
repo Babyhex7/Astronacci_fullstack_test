@@ -124,7 +124,7 @@ const Home = () => {
               className="text-lg md:text-xl text-dark-500 mb-8 max-w-xl"
             >
               Edukasi trading lengkap dengan analisis market real-time, video
-              tutorial eksklusif, dan komunitas trader profesional.
+              tutorial eksklusif, dan strategi trading yang sudah teruji.
             </motion.p>
 
             <motion.div
@@ -348,11 +348,6 @@ const Home = () => {
                 desc: "Pelajari strategi trading dari dasar hingga mahir dengan video HD berkualitas.",
               },
               {
-                icon: FiAward,
-                title: "Sertifikasi",
-                desc: "Dapatkan sertifikat setelah menyelesaikan modul pembelajaran trading.",
-              },
-              {
                 icon: FiTrendingUp,
                 title: "Sinyal Trading",
                 desc: "Akses sinyal trading real-time dari tim analis profesional kami.",
@@ -363,9 +358,14 @@ const Home = () => {
                 desc: "Pelajari teknik manajemen risiko untuk melindungi modal Anda.",
               },
               {
+                icon: FiAward,
+                title: "Strategi Teruji",
+                desc: "Strategi trading yang sudah terbukti menghasilkan profit konsisten.",
+              },
+              {
                 icon: FiUsers,
-                title: "Komunitas",
-                desc: "Bergabung dengan ribuan trader lain untuk sharing dan diskusi.",
+                title: "Support 24/7",
+                desc: "Tim support kami siap membantu pertanyaan trading Anda kapan saja.",
               },
             ].map((feature, idx) => (
               <motion.div

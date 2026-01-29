@@ -1,11 +1,16 @@
-// Middleware verifikasi JWT Token
+// Middleware verifikasi JWT Token - SECURE VERSION
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const authMiddleware = (req, res, next) => {
-  // Ambil token dari header Authorization
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Format: "Bearer <token>"
+  // Prioritas: Cookie (secure) > Authorization header (backward compatibility)
+  let token = req.cookies?.auth_token;
+
+  // Fallback ke Authorization header jika cookie tidak ada
+  if (!token) {
+    const authHeader = req.headers["authorization"];
+    token = authHeader && authHeader.split(" ")[1]; // Format: "Bearer <token>"
+  }
 
   if (!token) {
     return res.status(401).json({ message: "Token tidak ditemukan" });

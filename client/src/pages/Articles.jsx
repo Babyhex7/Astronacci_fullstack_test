@@ -75,13 +75,16 @@ const Articles = () => {
                 Artikel Analisis Market
               </h1>
               <p className="text-lg text-dark-500 mb-6 max-w-3xl">
-                Dapatkan insight mendalam tentang pergerakan saham, crypto, dan forex dari tim analis profesional kami.
+                Dapatkan insight mendalam tentang pergerakan saham, crypto, dan
+                forex dari tim analis profesional kami.
               </p>
-              
+
               {/* Stats */}
               <div className="flex flex-wrap gap-6">
                 <div>
-                  <div className="text-3xl font-bold text-primary-500">{articles.length}</div>
+                  <div className="text-3xl font-bold text-primary-500">
+                    {articles.length}
+                  </div>
                   <div className="text-sm text-dark-400">Total Artikel</div>
                 </div>
                 <div className="border-l border-dark-200 pl-6">

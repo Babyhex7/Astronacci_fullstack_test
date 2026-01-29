@@ -55,4 +55,7 @@ router.get(
   authController.oauthCallback,
 );
 
+// POST /api/auth/logout - Logout secure (clear HTTP-only cookie)
+router.post("/logout", authController.logout);
+
 module.exports = router;

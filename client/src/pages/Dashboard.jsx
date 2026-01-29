@@ -1,44 +1,17 @@
-// Halaman Dashboard
+// Halaman Dashboard - SECURE VERSION
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { getStats } from "../services/userService";
-import { getMe } from "../services/authService";
 import Loader from "../components/common/Loader";
 import Badge from "../components/common/Badge";
 import { FiFileText, FiPlay, FiTrendingUp, FiUser } from "react-icons/fi";
 
 const Dashboard = () => {
-  const { user, login } = useAuth();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [oauthLoading, setOauthLoading] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  // Handle OAuth token dari URL (login Google/Facebook redirect ke sini)
-  useEffect(() => {
-    const token = searchParams.get("token");
-    if (token) {
-      console.log("[Dashboard] OAuth token ditemukan, menyimpan...");
-      setOauthLoading(true);
-      // Hapus token dari URL agar bersih
-      searchParams.delete("token");
-      setSearchParams(searchParams, { replace: true });
-      // Simpan token dan fetch user data
-      localStorage.setItem("token", token);
-      getMe()
-        .then((data) => {
-          // Update auth state dengan login function
-          login(token, data.user);
-          setOauthLoading(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching user:", err);
-          setOauthLoading(false);
-        });
-    }
-  }, [searchParams, setSearchParams, login]);
 
   // Fetch statistik saat mount
   useEffect(() => {
@@ -91,7 +64,7 @@ const Dashboard = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  if (loading || oauthLoading) {
+  if (loading) {
     return <Loader.FullPage />;
   }
 
@@ -213,7 +186,9 @@ const Dashboard = () => {
               className="block bg-white border-2 border-primary-500 rounded-2xl p-6 hover:shadow-xl hover:shadow-primary-500/20 transition-all hover:-translate-y-1 hover:border-primary-600"
             >
               <FiFileText className="w-10 h-10 mb-4 text-primary-500" />
-              <h3 className="text-xl font-bold mb-2 text-dark-800">Artikel Analisis</h3>
+              <h3 className="text-xl font-bold mb-2 text-dark-800">
+                Artikel Analisis
+              </h3>
               <p className="text-dark-600">
                 Baca analisis market, saham, crypto, dan forex terbaru
               </p>
@@ -227,7 +202,9 @@ const Dashboard = () => {
               className="block bg-white border-2 border-secondary-500 rounded-2xl p-6 hover:shadow-xl hover:shadow-secondary-500/20 transition-all hover:-translate-y-1 hover:border-secondary-600"
             >
               <FiPlay className="w-10 h-10 mb-4 text-secondary-500" />
-              <h3 className="text-xl font-bold mb-2 text-dark-800">Video Tutorial</h3>
+              <h3 className="text-xl font-bold mb-2 text-dark-800">
+                Video Tutorial
+              </h3>
               <p className="text-dark-600">
                 Pelajari teknik trading dari video tutorial lengkap
               </p>

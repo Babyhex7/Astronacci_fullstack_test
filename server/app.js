@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
 const passport = require("passport");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const routes = require("./routes");
@@ -19,6 +20,9 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Cookie parser untuk secure HTTP-only cookies
+app.use(cookieParser());
 
 // Session untuk OAuth
 app.use(

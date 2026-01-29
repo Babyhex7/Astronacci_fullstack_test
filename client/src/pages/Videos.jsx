@@ -75,13 +75,16 @@ const Videos = () => {
                 Video Tutorial Trading
               </h1>
               <p className="text-lg text-dark-500 mb-6 max-w-3xl">
-                Pelajari strategi dan teknik trading dari para profesional melalui video tutorial HD berkualitas tinggi.
+                Pelajari strategi dan teknik trading dari para profesional
+                melalui video tutorial HD berkualitas tinggi.
               </p>
-              
+
               {/* Stats */}
               <div className="flex flex-wrap gap-6">
                 <div>
-                  <div className="text-3xl font-bold text-secondary-500">{videos.length}</div>
+                  <div className="text-3xl font-bold text-secondary-500">
+                    {videos.length}
+                  </div>
                   <div className="text-sm text-dark-400">Total Video</div>
                 </div>
                 <div className="border-l border-dark-200 pl-6">

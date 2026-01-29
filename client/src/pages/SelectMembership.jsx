@@ -1,44 +1,19 @@
-// Halaman Pilih Membership
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+// Halaman Pilih Membership - SECURE VERSION
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { selectMembership, getMe } from "../services/authService";
+import { selectMembership } from "../services/authService";
 import Button from "../components/common/Button";
-import Loader from "../components/common/Loader";
 import { FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
 const SelectMembership = () => {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [initializing, setInitializing] = useState(true);
 
-  const { login, updateUser } = useAuth();
+  const { updateUser } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  // Cek token dari OAuth callback
-  useEffect(() => {
-    const token = searchParams.get("token");
-    if (token) {
-      console.log("[SelectMembership] OAuth token ditemukan, menyimpan...");
-      localStorage.setItem("token", token);
-      // Fetch user data dan set auth state
-      getMe()
-        .then((data) => {
-          // Set auth state dengan login function (penting untuk set isAuthenticated)
-          login(token, data.user);
-          setInitializing(false);
-        })
-        .catch((err) => {
-          console.error("Error fetching user:", err);
-          setInitializing(false);
-        });
-    } else {
-      setInitializing(false);
-    }
-  }, [searchParams, login]);
 
   // Data tipe membership
   const memberships = [
@@ -86,7 +61,6 @@ const SelectMembership = () => {
     try {
       const data = await selectMembership(selected);
       updateUser(data.user);
-      login(data.token, data.user);
       navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Gagal memilih membership");
@@ -94,10 +68,6 @@ const SelectMembership = () => {
       setLoading(false);
     }
   };
-
-  if (initializing) {
-    return <Loader.FullPage />;
-  }
 
   // Animasi
   const containerVariants = {

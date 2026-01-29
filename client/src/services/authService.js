@@ -33,6 +33,12 @@ export const getMe = async () => {
   return response.data;
 };
 
+// Logout (clear HTTP-only cookie di server)
+export const logout = async () => {
+  const response = await api.post("/auth/logout");
+  return response.data;
+};
+
 // URL untuk OAuth (buka di browser)
 export const getGoogleAuthUrl = () => `${API_URL}/auth/google`;
 export const getFacebookAuthUrl = () => `${API_URL}/auth/facebook`;

@@ -1,6 +1,6 @@
 // Context untuk Auth state management
-import { createContext, useContext, useState, useEffect } from "react";
-import { getMe } from "../services/authService";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { getMe, logout as logoutService } from "../services/authService";
 
 // Buat context
 const AuthContext = createContext(null);
@@ -11,51 +11,50 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Cek token saat mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  // Cek autentikasi dari token
-  const checkAuth = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
+  // Cek autentikasi dari cookie/token (useCallback untuk stabilitas)
+  const checkAuth = useCallback(async () => {
     try {
       const data = await getMe();
       setUser(data.user);
       setIsAuthenticated(true);
     } catch (error) {
-      // Token invalid, hapus
-      localStorage.removeItem("token");
+      // Token/cookie invalid - ini normal untuk user yang belum login
+      setUser(null);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Login: simpan token & set user
-  const login = (token, userData) => {
-    localStorage.setItem("token", token);
+  // Cek token saat mount (hanya sekali)
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Login: set user (token disimpan di cookie HTTP-only oleh server)
+  const login = useCallback((userData) => {
     setUser(userData);
     setIsAuthenticated(true);
-  };
+  }, []);
 
-  // Logout: hapus token & reset state
-  const logout = () => {
-    localStorage.removeItem("token");
+  // Logout: clear cookie di server
+  const logout = useCallback(async () => {
+    try {
+      await logoutService();
+    } catch (error) {
+      console.warn("Logout request gagal", error);
+    }
     setUser(null);
     setIsAuthenticated(false);
-  };
+  }, []);
 
   // Update user (setelah select membership)
-  const updateUser = (userData) => {
+  const updateUser = useCallback((userData) => {
     setUser(userData);
-  };
+  }, []);
 
-  const value = {
+  // Stabilkan value dengan useMemo
+  const value = useMemo(() => ({
     user,
     loading,
     isAuthenticated,
@@ -63,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuth,
-  };
+  }), [user, loading, isAuthenticated, login, logout, updateUser, checkAuth]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

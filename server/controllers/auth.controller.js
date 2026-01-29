@@ -134,8 +134,16 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Email atau password salah" });
     }
 
-    // Generate token
+    // Generate token dan set ke HTTP-only cookie
     const token = generateToken(user);
+
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
 
     res.json({
       message: "Login berhasil",
@@ -147,7 +155,7 @@ exports.login = async (req, res) => {
         membership: user.membership,
         needSelectMembership: !user.membership_id,
       },
-      token,
+      token, // dikirim untuk kompatibilitas, tapi frontend pakai cookie
     });
   } catch (err) {
     console.error("Error login:", err);
@@ -181,7 +189,7 @@ exports.getMe = async (req, res) => {
   }
 };
 
-// OAuth Callback Handler (Google/Facebook)
+// OAuth Callback Handler (Google/Facebook) - SECURE VERSION
 exports.oauthCallback = (req, res) => {
   const user = req.user;
 
@@ -191,13 +199,38 @@ exports.oauthCallback = (req, res) => {
 
   const token = generateToken(user);
 
-  // Redirect ke frontend dengan token
+  // Set secure HTTP-only cookie instead of URL token
+  res.cookie("auth_token", token, {
+    httpOnly: true, // Tidak bisa diakses JavaScript - XSS protection
+    secure: process.env.NODE_ENV === "production", // HTTPS only di production
+    sameSite: "lax", // CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 hari
+    path: "/", // Available untuk semua routes
+  });
+
+  // Redirect tanpa token di URL - AMAN
   const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
   const redirectUrl = user.membership_id
-    ? `${clientUrl}/dashboard?token=${token}`
-    : `${clientUrl}/select-membership?token=${token}`;
+    ? `${clientUrl}/dashboard`
+    : `${clientUrl}/select-membership`;
 
-  console.log("[OAuth Callback] Redirect to:", redirectUrl);
+  console.log("[OAuth Callback] Secure redirect to:", redirectUrl);
 
   res.redirect(redirectUrl);
+};
+
+// POST /api/auth/logout - Secure logout (clear HTTP-only cookie)
+exports.logout = (req, res) => {
+  // Clear the HTTP-only auth cookie
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+  });
+
+  res.json({
+    message: "Logout berhasil",
+    success: true,
+  });
 };
