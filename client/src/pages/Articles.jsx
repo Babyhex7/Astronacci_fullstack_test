@@ -132,7 +132,10 @@ const Articles = () => {
               <motion.div key={article.id} variants={itemVariants}>
                 <Link to={`/articles/${article.id}`}>
                   <Card hover className="h-full">
-                    <Card.Image src={article.thumbnail_url} alt={article.title} />
+                    <Card.Image
+                      src={article.thumbnail_url}
+                      alt={article.title}
+                    />
                     <Card.Body>
                       {article.category && (
                         <Badge variant={article.category.toLowerCase()}>
@@ -146,7 +149,9 @@ const Articles = () => {
                         {article.content?.substring(0, 100)}...
                       </Card.Text>
                       <p className="text-xs text-dark-400 mt-3">
-                        {new Date(article.created_at).toLocaleDateString("id-ID")}
+                        {new Date(article.created_at).toLocaleDateString(
+                          "id-ID",
+                        )}
                       </p>
                     </Card.Body>
                   </Card>

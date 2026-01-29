@@ -154,7 +154,8 @@ const Dashboard = () => {
               <div>
                 <p className="text-sm text-dark-400">Total Konten</p>
                 <p className="text-xl font-bold text-dark-800">
-                  {(stats?.articlesAccessed || 0) + (stats?.videosAccessed || 0)}
+                  {(stats?.articlesAccessed || 0) +
+                    (stats?.videosAccessed || 0)}
                 </p>
               </div>
             </div>
@@ -240,7 +241,9 @@ const Dashboard = () => {
                               : "success"
                           }
                         >
-                          {item.content_type === "article" ? "Artikel" : "Video"}
+                          {item.content_type === "article"
+                            ? "Artikel"
+                            : "Video"}
                         </Badge>
                       </td>
                       <td className="px-6 py-4 text-dark-400 text-sm">

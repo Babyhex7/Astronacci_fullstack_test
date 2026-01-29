@@ -31,13 +31,13 @@ Card.Body = ({ children, className = "" }) => (
 );
 
 Card.Title = ({ children, className = "" }) => (
-  <h3 className={`text-lg font-bold text-dark-800 ${className}`}>
-    {children}
-  </h3>
+  <h3 className={`text-lg font-bold text-dark-800 ${className}`}>{children}</h3>
 );
 
 Card.Text = ({ children, className = "" }) => (
-  <p className={`text-dark-500 text-sm mt-2 leading-relaxed ${className}`}>{children}</p>
+  <p className={`text-dark-500 text-sm mt-2 leading-relaxed ${className}`}>
+    {children}
+  </p>
 );
 
 export default Card;

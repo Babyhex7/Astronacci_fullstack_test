@@ -188,11 +188,15 @@ const SelectMembership = () => {
               <ul className="mt-6 space-y-3">
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                  <span className="text-dark-600">{m.articles} Artikel Analisis</span>
+                  <span className="text-dark-600">
+                    {m.articles} Artikel Analisis
+                  </span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
-                  <span className="text-dark-600">{m.videos} Video Tutorial</span>
+                  <span className="text-dark-600">
+                    {m.videos} Video Tutorial
+                  </span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <FiCheckCircle className="text-green-500 flex-shrink-0" />
