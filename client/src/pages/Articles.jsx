@@ -2,14 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getArticles } from "../services/articleService";
+import { getViewedContentIds } from "../services/userService";
+import { useAuth } from "../context/AuthContext";
 import Card from "../components/common/Card";
 import Badge from "../components/common/Badge";
 import Loader from "../components/common/Loader";
-import { FiSearch, FiFileText } from "react-icons/fi";
+import { FiSearch, FiFileText, FiCheckCircle } from "react-icons/fi";
 
 const Articles = () => {
+  const { user } = useAuth();
   const [articles, setArticles] = useState([]);
   const [allArticles, setAllArticles] = useState([]);
+  const [viewedIds, setViewedIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -47,6 +51,16 @@ const Articles = () => {
     }
   }, []);
 
+  const fetchViewedIds = useCallback(async () => {
+    if (!user) return;
+    try {
+      const data = await getViewedContentIds();
+      setViewedIds(data.articles || []);
+    } catch (error) {
+      console.error("Error fetching viewed articles:", error);
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
@@ -54,6 +68,10 @@ const Articles = () => {
   useEffect(() => {
     fetchAllArticles();
   }, [fetchAllArticles]);
+
+  useEffect(() => {
+    fetchViewedIds();
+  }, [fetchViewedIds]);
 
   const categories = [
     ...new Set(allArticles.map((a) => a.category).filter(Boolean)),
@@ -171,36 +189,52 @@ const Articles = () => {
             animate="visible"
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {articles.map((article) => (
-              <motion.div key={article.id} variants={itemVariants}>
-                <Link to={`/articles/${article.id}`}>
-                  <Card hover className="h-full">
-                    <Card.Image
-                      src={article.thumbnail_url}
-                      alt={article.title}
-                    />
-                    <Card.Body>
-                      {article.category && (
-                        <Badge variant={article.category.toLowerCase()}>
-                          {article.category}
-                        </Badge>
-                      )}
-                      <Card.Title className="mt-2 line-clamp-2">
-                        {article.title}
-                      </Card.Title>
-                      <Card.Text className="line-clamp-2">
-                        {article.content?.substring(0, 100)}...
-                      </Card.Text>
-                      <p className="text-xs text-dark-400 mt-3">
-                        {new Date(article.created_at).toLocaleDateString(
-                          "id-ID",
+            {articles.map((article) => {
+              const isViewed = viewedIds.includes(article.id);
+              return (
+                <motion.div key={article.id} variants={itemVariants}>
+                  <Link to={`/articles/${article.id}`}>
+                    <Card
+                      hover
+                      className={`h-full ${isViewed ? "ring-2 ring-green-400/50" : ""}`}
+                    >
+                      <div className="relative">
+                        <Card.Image
+                          src={article.thumbnail_url}
+                          alt={article.title}
+                        />
+                        {isViewed && (
+                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg">
+                            <FiCheckCircle className="w-3 h-3" />
+                            <span>Sudah Dibaca</span>
+                          </div>
                         )}
-                      </p>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
+                      </div>
+                      <Card.Body>
+                        <div className="flex flex-wrap gap-2">
+                          {article.category && (
+                            <Badge variant={article.category.toLowerCase()}>
+                              {article.category}
+                            </Badge>
+                          )}
+                        </div>
+                        <Card.Title className="mt-2 line-clamp-2">
+                          {article.title}
+                        </Card.Title>
+                        <Card.Text className="line-clamp-2">
+                          {article.content?.substring(0, 100)}...
+                        </Card.Text>
+                        <p className="text-xs text-dark-400 mt-3">
+                          {new Date(article.created_at).toLocaleDateString(
+                            "id-ID",
+                          )}
+                        </p>
+                      </Card.Body>
+                    </Card>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
       </div>

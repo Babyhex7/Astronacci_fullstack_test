@@ -2,15 +2,22 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
-import { getStats } from "../services/userService";
+import { getStats, getContentHistory } from "../services/userService";
 import { getMembershipInfo } from "../utils/constants";
 import Loader from "../components/common/Loader";
 import Badge from "../components/common/Badge";
-import { FiFileText, FiPlay, FiTrendingUp, FiUser } from "react-icons/fi";
+import {
+  FiFileText,
+  FiPlay,
+  FiTrendingUp,
+  FiUser,
+  FiClock,
+} from "react-icons/fi";
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [recentHistory, setRecentHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchStats = useCallback(async () => {
@@ -19,14 +26,25 @@ const Dashboard = () => {
       setStats(data);
     } catch (error) {
       console.error("Error fetching stats:", error);
-    } finally {
-      setLoading(false);
+    }
+  }, []);
+
+  const fetchHistory = useCallback(async () => {
+    try {
+      const data = await getContentHistory({ limit: 10 });
+      setRecentHistory(data.history || []);
+    } catch (error) {
+      console.error("Error fetching history:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    const loadData = async () => {
+      await Promise.all([fetchStats(), fetchHistory()]);
+      setLoading(false);
+    };
+    loadData();
+  }, [fetchStats, fetchHistory]);
 
   const membership = stats?.membership || user?.membership;
   const membershipInfo = getMembershipInfo(membership?.type);
@@ -200,7 +218,113 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Recent Activity */}
-        {stats?.recentHistory && stats.recentHistory.length > 0 && (
+        {recentHistory && recentHistory.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-dark-800">
+                Konten Yang Sudah Dilihat
+              </h2>
+              <span className="text-sm text-dark-400">
+                {recentHistory.length} konten terakhir
+              </span>
+            </div>
+            <div className="bg-white rounded-2xl shadow-sm border border-dark-100 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-dark-50">
+                    <tr>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
+                        Konten
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
+                        Tipe
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
+                        Kategori
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
+                        <div className="flex items-center gap-1">
+                          <FiClock className="w-4 h-4" />
+                          Waktu Akses
+                        </div>
+                      </th>
+                      <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
+                        Aksi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-dark-100">
+                    {recentHistory.map((item, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-dark-50 transition-colors"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {item.content?.thumbnail_url && (
+                              <img
+                                src={item.content.thumbnail_url}
+                                alt={item.content?.title}
+                                className="w-12 h-12 object-cover rounded-lg"
+                              />
+                            )}
+                            <span className="text-dark-700 font-medium line-clamp-1">
+                              {item.content?.title || "-"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <Badge
+                            variant={
+                              item.content_type === "article"
+                                ? "primary"
+                                : "success"
+                            }
+                          >
+                            {item.content_type === "article"
+                              ? "Artikel"
+                              : "Video"}
+                          </Badge>
+                        </td>
+                        <td className="px-6 py-4 text-dark-500 text-sm">
+                          {item.content?.category || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-dark-400 text-sm">
+                          {new Date(item.accessed_at).toLocaleDateString(
+                            "id-ID",
+                            {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            },
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <Link
+                            to={`/${item.content_type === "article" ? "articles" : "videos"}/${item.content_id}`}
+                            className="text-primary-500 hover:text-primary-600 text-sm font-medium"
+                          >
+                            Lihat Lagi
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Empty State for History */}
+        {recentHistory && recentHistory.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -208,52 +332,28 @@ const Dashboard = () => {
             className="mt-8"
           >
             <h2 className="text-xl font-bold text-dark-800 mb-4">
-              Aktivitas Terakhir
+              Konten Yang Sudah Dilihat
             </h2>
-            <div className="bg-white rounded-2xl shadow-sm border border-dark-100 overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-dark-50">
-                  <tr>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
-                      Konten
-                    </th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
-                      Tipe
-                    </th>
-                    <th className="text-left px-6 py-4 text-sm font-semibold text-dark-600">
-                      Waktu
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-dark-100">
-                  {stats.recentHistory.map((item, index) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-dark-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-dark-700 font-medium">
-                        {item.content?.title || "-"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Badge
-                          variant={
-                            item.content_type === "article"
-                              ? "primary"
-                              : "success"
-                          }
-                        >
-                          {item.content_type === "article"
-                            ? "Artikel"
-                            : "Video"}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 text-dark-400 text-sm">
-                        {new Date(item.accessed_at).toLocaleDateString("id-ID")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="bg-white rounded-2xl shadow-sm border border-dark-100 p-8 text-center">
+              <FiFileText className="w-12 h-12 mx-auto text-dark-300 mb-3" />
+              <p className="text-dark-500">Belum ada konten yang dilihat</p>
+              <p className="text-dark-400 text-sm mt-1">
+                Mulai jelajahi artikel dan video untuk melihat history di sini
+              </p>
+              <div className="flex justify-center gap-4 mt-4">
+                <Link
+                  to="/articles"
+                  className="text-primary-500 hover:text-primary-600 font-medium"
+                >
+                  Lihat Artikel →
+                </Link>
+                <Link
+                  to="/videos"
+                  className="text-secondary-500 hover:text-secondary-600 font-medium"
+                >
+                  Lihat Video →
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

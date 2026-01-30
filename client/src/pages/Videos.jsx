@@ -2,14 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getVideos } from "../services/videoService";
+import { getViewedContentIds } from "../services/userService";
+import { useAuth } from "../context/AuthContext";
 import Card from "../components/common/Card";
 import Badge from "../components/common/Badge";
 import Loader from "../components/common/Loader";
-import { FiSearch, FiClock, FiPlay } from "react-icons/fi";
+import { FiSearch, FiClock, FiPlay, FiCheckCircle } from "react-icons/fi";
 
 const Videos = () => {
+  const { user } = useAuth();
   const [videos, setVideos] = useState([]);
   const [allVideos, setAllVideos] = useState([]);
+  const [viewedIds, setViewedIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -47,6 +51,16 @@ const Videos = () => {
     }
   }, []);
 
+  const fetchViewedIds = useCallback(async () => {
+    if (!user) return;
+    try {
+      const data = await getViewedContentIds();
+      setViewedIds(data.videos || []);
+    } catch (error) {
+      console.error("Error fetching viewed videos:", error);
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchVideos();
   }, [fetchVideos]);
@@ -54,6 +68,10 @@ const Videos = () => {
   useEffect(() => {
     fetchAllVideos();
   }, [fetchAllVideos]);
+
+  useEffect(() => {
+    fetchViewedIds();
+  }, [fetchViewedIds]);
 
   const categories = [
     ...new Set(allVideos.map((v) => v.category).filter(Boolean)),
@@ -171,43 +189,59 @@ const Videos = () => {
             animate="visible"
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {videos.map((video) => (
-              <motion.div key={video.id} variants={itemVariants}>
-                <Link to={`/videos/${video.id}`}>
-                  <Card hover className="h-full">
-                    <div className="relative">
-                      <Card.Image src={video.thumbnail_url} alt={video.title} />
-                      {/* Play overlay */}
-                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                        <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                          <div className="w-0 h-0 border-l-[20px] border-l-secondary-500 border-y-[12px] border-y-transparent ml-1" />
+            {videos.map((video) => {
+              const isViewed = viewedIds.includes(video.id);
+              return (
+                <motion.div key={video.id} variants={itemVariants}>
+                  <Link to={`/videos/${video.id}`}>
+                    <Card
+                      hover
+                      className={`h-full ${isViewed ? "ring-2 ring-green-400/50" : ""}`}
+                    >
+                      <div className="relative">
+                        <Card.Image
+                          src={video.thumbnail_url}
+                          alt={video.title}
+                        />
+                        {/* Viewed badge */}
+                        {isViewed && (
+                          <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-lg flex items-center gap-1 shadow-lg z-10">
+                            <FiCheckCircle className="w-3 h-3" />
+                            <span>Sudah Ditonton</span>
+                          </div>
+                        )}
+                        {/* Play overlay */}
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                          <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-0 h-0 border-l-[20px] border-l-secondary-500 border-y-[12px] border-y-transparent ml-1" />
+                          </div>
                         </div>
+                        {/* Duration */}
+                        {video.duration && (
+                          <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-lg flex items-center">
+                            <FiClock className="mr-1" />
+                            {video.duration} menit
+                          </div>
+                        )}
                       </div>
-                      {/* Duration */}
-                      {video.duration && (
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-lg flex items-center">
-                          <FiClock className="mr-1" />
-                          {video.duration} menit
-                        </div>
-                      )}
-                    </div>
-                    <Card.Body>
-                      {video.category && (
-                        <Badge variant={video.category.toLowerCase()}>
-                          {video.category}
-                        </Badge>
-                      )}
-                      <Card.Title className="mt-2 line-clamp-2">
-                        {video.title}
-                      </Card.Title>
-                      <Card.Text className="line-clamp-2">
-                        {video.description}
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
+                      <Card.Body>
+                        {video.category && (
+                          <Badge variant={video.category.toLowerCase()}>
+                            {video.category}
+                          </Badge>
+                        )}
+                        <Card.Title className="mt-2 line-clamp-2">
+                          {video.title}
+                        </Card.Title>
+                        <Card.Text className="line-clamp-2">
+                          {video.description}
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Link>
+                </motion.div>
+              );
+            })}
           </motion.div>
         )}
       </div>
