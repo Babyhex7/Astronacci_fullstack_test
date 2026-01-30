@@ -67,16 +67,16 @@ Bikin file `.env` di folder `server`:
 
 ```env
 DB_HOST=localhost
-DB_USER=astronacci_user
-DB_PASSWORD=password123
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=
 DB_NAME=astronacci_db
-DB_DIALECT=mysql
 
-JWT_SECRET=your-secret-key-ganti-ini
+JWT_SECRET=rahasia-astronacci-ganti-ini
 PORT=5000
 CLIENT_URL=http://localhost:5173
 
-# OAuth (optional, pake xxx kalo ga dipake)
+# OAuth (optional, isi xxx kalo ga dipake)
 GOOGLE_CLIENT_ID=xxx
 GOOGLE_CLIENT_SECRET=xxx
 GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
@@ -180,40 +180,4 @@ client/
   │   ├── context/     - Global state
   │   └── utils/       - Helper functions
   └── public/          - Static files
-```
-
-├── client/ # Frontend (React + Vite)
-│ ├── src/
-│ │ ├── components/ # Reusable components
-│ │ ├── pages/ # Page components
-│ │ ├── services/ # API calls
-│ │ ├── context/ # Global state
-│ │ └── utils/ # Helper functions
-│ └── public/ # Static assets
-└── README.md
-
-```
-
----
-
-## 🎯 Fitur Yang Sudah Diimplementasikan
-
-- ✅ Multi-provider authentication (Email, Google, GitHub)
-- ✅ Account linking dengan konfirmasi user
-- ✅ Sistem membership bertingkat (Free/Basic/Premium)
-- ✅ Smart access control (konten yang sudah diakses tidak mengurangi kuota)
-- ✅ Content history tracking (lihat artikel/video yang sudah dibaca/ditonton)
-- ✅ Badge "Sudah Dibaca/Ditonton" pada konten
-- ✅ Dashboard dengan statistik penggunaan
-- ✅ Search & filter untuk artikel dan video
-- ✅ Responsive design (mobile-friendly)
-
----
-
-## 📞 Kontak & Support
-
-Jika mengalami kesulitan dalam setup, silakan hubungi tim development atau buat issue di repository.
-
-**Happy Coding! 🚀**
-
 ```
