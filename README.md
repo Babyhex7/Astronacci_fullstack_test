@@ -45,15 +45,7 @@ cd Astronacci_fullstack_test
 Buka MySQL (terminal atau Workbench), lalu:
 
 ```sql
-CREATE DATABASE astronacci_db;
-```
-
-Kalo mau pake user khusus (optional):
-
-```sql
-CREATE USER 'astronacci_user'@'localhost' IDENTIFIED BY 'password123';
-GRANT ALL PRIVILEGES ON astronacci_db.* TO 'astronacci_user'@'localhost';
-FLUSH PRIVILEGES;
+CREATE DATABASE astronacci_trading;
 ```
 
 ### 3. Setup Backend
@@ -66,14 +58,21 @@ npm install
 Bikin file `.env` di folder `server`:
 
 ```env
+# Server
+PORT=5000
+NODE_ENV=development
+
+# MySQL
 DB_HOST=localhost
 DB_PORT=3306
+DB_NAME=astronacci_trading
 DB_USER=root
 DB_PASSWORD=
-DB_NAME=astronacci_db
 
-JWT_SECRET=rahasia-astronacci-ganti-ini
-PORT=5000
+# JWT (ganti dengan random string)
+JWT_SECRET=random-secret-key-ganti-ini
+
+# Client URL
 CLIENT_URL=http://localhost:5173
 
 # OAuth (optional, isi xxx kalo ga dipake)
@@ -137,7 +136,7 @@ Frontend jalan di `http://localhost:5173`
 
 - Cek MySQL udah jalan belum
 - Cek username/password di `.env`
-- Pastikan database `astronacci_db` udah dibuat
+- Pastikan database `astronacci_trading` udah dibuat
 
 **Port udah dipake**
 
@@ -177,7 +176,8 @@ client/
   │   ├── components/  - Reusable components
   │   ├── pages/       - Page components
   │   ├── services/    - API services
-  │   ├── context/     - Global state
+  │   ├── context/     - Global state (Auth)
+  │   ├── hooks/       - Custom React hooks
   │   └── utils/       - Helper functions
   └── public/          - Static files
 ```
