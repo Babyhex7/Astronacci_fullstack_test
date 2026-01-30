@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import ReactPlayer from "react-player";
 import { getVideoById } from "../services/videoService";
@@ -15,11 +15,7 @@ const VideoDetail = () => {
   const [error, setError] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
 
-  useEffect(() => {
-    fetchVideo();
-  }, [id]);
-
-  const fetchVideo = async () => {
+  const fetchVideo = useCallback(async () => {
     try {
       const data = await getVideoById(id);
       setVideo(data.video);
@@ -33,7 +29,11 @@ const VideoDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchVideo();
+  }, [fetchVideo]);
 
   if (loading) {
     return <Loader.FullPage />;

@@ -1,39 +1,24 @@
-### ====================================
-### ASTRONACCI API TESTING
-### Gunakan extension REST Client di VS Code
-### ====================================
+### API Testing
 
 ### Variables
 @baseUrl = http://localhost:5000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiZW1haWwiOiJ0ZXN0MkBhc3Ryb25hY2NpLmNvbSIsIm1lbWJlcnNoaXBJZCI6bnVsbCwicm9sZSI6InVzZXIiLCJpYXQiOjE3Njk2NDkxMTYsImV4cCI6MTc3MDI1MzkxNn0.5saXoD1L9Qox-iF29txsdNtbz-rrp_ELqRYcG_IZ9qY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImVtYWlsIjoidGVzdDNAYXN0cm9uYWNjaS5jb20iLCJtZW1iZXJzaGlwSWQiOm51bGwsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY5NzM0MDEwLCJleHAiOjE3NzAzMzg4MTB9.vKrn_f2xsr7rPcfqMvT_m45QlzOksaufREPYX2Ao22Q
 
-### ====================================
-### 1. TEST SERVER
-### ====================================
-
-### Test server berjalan
+### Test Server
 GET http://localhost:5000
 
-### ====================================
-### 2. AUTH - REGISTER
-### ====================================
-
-### Register User Baru (Step 1)
+### Register
 # @name registerResponse
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "email": "test2@astronacci.com",
+  "email": "test3@astronacci.com",
   "password": "password123",
   "full_name": "Test User Astronacci"
 }
 
-### ====================================
-### 3. AUTH - SELECT MEMBERSHIP
-### ====================================
-
-### Pilih Tipe A (Free) - 3 artikel, 3 video
+### Select Membership Type A
 POST {{baseUrl}}/auth/select-membership
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -42,7 +27,7 @@ Authorization: Bearer {{token}}
   "membershipType": "A"
 }
 
-### Pilih Tipe B (Basic) - 10 artikel, 10 video
+### Select Membership Type B
 # POST {{baseUrl}}/auth/select-membership
 # Content-Type: application/json
 # Authorization: Bearer {{registerResponse.response.body.token}}
@@ -51,7 +36,7 @@ Authorization: Bearer {{token}}
 #   "membershipType": "B"
 # }
 
-### Pilih Tipe C (Premium) - Unlimited
+### Select Membership Type C
 # POST {{baseUrl}}/auth/select-membership
 # Content-Type: application/json
 # Authorization: Bearer {{registerResponse.response.body.token}}
@@ -60,37 +45,25 @@ Authorization: Bearer {{token}}
 #   "membershipType": "C"
 # }
 
-### ====================================
-### 4. AUTH - LOGIN
-### ====================================
-
-### Login User
+### Login
 # @name loginResponse
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "email": "test2@astronacci.com",
+  "email": "test3@astronacci.com",
   "password": "password123"
 }
 
-### ====================================
-### 5. AUTH - GET CURRENT USER
-### ====================================
-
-### Get Current User (Me)
+### Get Current User
 GET {{baseUrl}}/auth/me
 Authorization: Bearer {{loginResponse.response.body.token}}
-
-### ====================================
-### 6. ARTICLES
-### ====================================
 
 ### Get All Articles
 GET {{baseUrl}}/articles
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### Get Article by ID (akan dicatat ke history)
+### Get Article 1
 GET {{baseUrl}}/articles/1
 Authorization: Bearer {{loginResponse.response.body.token}}
 
@@ -102,19 +75,15 @@ Authorization: Bearer {{loginResponse.response.body.token}}
 GET {{baseUrl}}/articles/3
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### Get Article 4 (harusnya ditolak untuk Tipe A)
+### Get Article 4
 GET {{baseUrl}}/articles/4
 Authorization: Bearer {{loginResponse.response.body.token}}
-
-### ====================================
-### 7. VIDEOS
-### ====================================
 
 ### Get All Videos
 GET {{baseUrl}}/videos
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### Get Video by ID
+### Get Video 1
 GET {{baseUrl}}/videos/1
 Authorization: Bearer {{loginResponse.response.body.token}}
 
@@ -126,37 +95,25 @@ Authorization: Bearer {{loginResponse.response.body.token}}
 GET {{baseUrl}}/videos/3
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### Get Video 4 (harusnya ditolak untuk Tipe A)
+### Get Video 4
 GET {{baseUrl}}/videos/4
 Authorization: Bearer {{loginResponse.response.body.token}}
-
-### ====================================
-### 8. USER PROFILE & STATS
-### ====================================
 
 ### Get User Profile
 GET {{baseUrl}}/users/profile
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### Get User Stats (statistik akses konten)
+### Get User Stats
 GET {{baseUrl}}/users/stats
 Authorization: Bearer {{loginResponse.response.body.token}}
 
-### ====================================
-### 9. OAUTH ENDPOINTS (Manual di Browser)
-### ====================================
-
-### Google OAuth - Buka di browser:
+### Google OAuth
 ### http://localhost:5000/api/auth/google
 
-### Facebook OAuth - Buka di browser:
+### Facebook OAuth
 ### http://localhost:5000/api/auth/facebook
 
-### ====================================
-### 10. ERROR CASES
-### ====================================
-
-### Login dengan email salah
+### Login Invalid Email
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -165,7 +122,7 @@ Content-Type: application/json
   "password": "password123"
 }
 
-### Login dengan password salah
+### Login Invalid Password
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -174,7 +131,7 @@ Content-Type: application/json
   "password": "salahpassword"
 }
 
-### Register dengan email yang sudah ada
+### Register Duplicate Email
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
@@ -184,5 +141,5 @@ Content-Type: application/json
   "full_name": "Duplicate User"
 }
 
-### Akses tanpa token
+### Access Without Token
 GET {{baseUrl}}/articles

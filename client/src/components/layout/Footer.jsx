@@ -55,17 +55,23 @@ const Footer = () => {
             <div>
               <h4 className="font-semibold text-white mb-4">Kontak</h4>
               <ul className="space-y-3 text-sm">
-                <li className="flex items-center space-x-2 text-dark-400">
-                  <FiMail className="w-4 h-4 text-primary-500" />
+                <li className="flex items-start space-x-2 text-dark-400">
+                  <FiMail className="w-4 h-4 text-primary-500 mt-0.5" />
                   <span>info@astronacci.com</span>
                 </li>
-                <li className="flex items-center space-x-2 text-dark-400">
-                  <FiPhone className="w-4 h-4 text-primary-500" />
-                  <span>+62 812-xxxx-xxxx</span>
+                <li className="flex items-start space-x-2 text-dark-400">
+                  <FiPhone className="w-4 h-4 text-primary-500 mt-0.5" />
+                  <div className="flex flex-col space-y-1">
+                    <span>(62-21) 2938.5522</span>
+                  </div>
                 </li>
-                <li className="flex items-center space-x-2 text-dark-400">
-                  <FiMapPin className="w-4 h-4 text-primary-500" />
-                  <span>Jakarta, Indonesia</span>
+                <li className="flex items-start space-x-2 text-dark-400">
+                  <FiMapPin className="w-4 h-4 text-primary-500 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span>Astronacci Mansion</span>
+                    <span>Arteri Gading E1 No 9</span>
+                    <span>Kelapa Gading, Jakarta - 14250</span>
+                  </div>
                 </li>
               </ul>
             </div>

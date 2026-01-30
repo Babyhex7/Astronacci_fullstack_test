@@ -35,3 +35,4 @@ export const logout = async () => {
 
 export const getGoogleAuthUrl = () => `${API_URL}/auth/google`;
 export const getFacebookAuthUrl = () => `${API_URL}/auth/facebook`;
+export const getGithubAuthUrl = () => `${API_URL}/auth/github`;

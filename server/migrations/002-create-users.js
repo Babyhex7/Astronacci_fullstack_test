@@ -1,6 +1,6 @@
 "use strict";
 
-// Migration: Buat tabel users
+// Migration Buat tabel users
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("users", {

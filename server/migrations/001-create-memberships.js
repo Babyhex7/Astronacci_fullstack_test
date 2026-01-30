@@ -1,6 +1,6 @@
 "use strict";
 
-// Migration: Buat tabel memberships
+// Migration Buat tabel memberships
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("memberships", {

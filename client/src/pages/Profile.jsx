@@ -1,4 +1,7 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { getMembershipInfo } from "../utils/constants";
+import { getStats } from "../services/userService";
 import {
   FiUser,
   FiMail,
@@ -10,23 +13,23 @@ import {
 
 const Profile = () => {
   const { user } = useAuth();
+  const membershipInfo = getMembershipInfo(user?.membership?.type);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const getMembershipInfo = () => {
-    const type = user?.membership?.type || "A";
-    const info = {
-      A: { name: "Gratis", color: "bg-dark-500", articles: 3, videos: 3 },
-      B: { name: "Basic", color: "bg-primary-500", articles: 10, videos: 10 },
-      C: {
-        name: "Premium",
-        color: "bg-secondary-500",
-        articles: "Unlimited",
-        videos: "Unlimited",
-      },
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getStats();
+        setStats(data.stats);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    return info[type] || info.A;
-  };
-
-  const membershipInfo = getMembershipInfo();
+    fetchStats();
+  }, []);
 
   const getProviderInfo = () => {
     if (user?.auth_provider === "google")
@@ -82,7 +85,7 @@ const Profile = () => {
                     </span>
                     <span className="text-dark-300">•</span>
                     <span
-                      className={`px-3 py-1 ${membershipInfo.color} text-white rounded-lg text-xs font-semibold`}
+                      className={`px-3 py-1 ${membershipInfo.bgColor} text-white rounded-lg text-xs font-semibold`}
                     >
                       Member {membershipInfo.name}
                     </span>
@@ -134,56 +137,114 @@ const Profile = () => {
             {/* Access Limits */}
             <div className="bg-white rounded-2xl shadow-sm border border-dark-200 p-8">
               <h3 className="text-lg font-bold text-dark-800 mb-6">
-                Batas Akses Konten
+                Penggunaan Akses Konten
               </h3>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Articles */}
-                <div className="p-6 bg-dark-50 rounded-xl border border-dark-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
-                      <FiFileText className="w-6 h-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-dark-500 font-medium">
-                        Artikel Analisis
-                      </p>
-                      <p className="text-3xl font-bold text-dark-800">
-                        {membershipInfo.articles}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-dark-200">
-                    <span className="text-xs text-dark-400">Per bulan</span>
-                    <span className="text-xs font-semibold text-primary-600">
-                      Aktif
-                    </span>
-                  </div>
+              {loading ? (
+                <div className="text-center py-8 text-dark-400">
+                  Memuat statistik...
                 </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Articles */}
+                  <div className="p-6 bg-dark-50 rounded-xl border border-dark-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center">
+                        <FiFileText className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-dark-500 font-medium">
+                          Artikel Analisis
+                        </p>
+                        <p className="text-3xl font-bold text-dark-800">
+                          {stats?.articles?.limit === -1 ? (
+                            "Unlimited"
+                          ) : (
+                            <>
+                              {stats?.articles?.accessed || 0}
+                              <span className="text-lg text-dark-400">
+                                /{stats?.articles?.limit || 0}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Progress Bar */}
+                    {stats?.articles?.limit !== -1 && (
+                      <div className="mb-3">
+                        <div className="w-full bg-dark-200 rounded-full h-2">
+                          <div
+                            className="bg-primary-500 h-2 rounded-full transition-all"
+                            style={{
+                              width: `${Math.min(100, ((stats?.articles?.accessed || 0) / (stats?.articles?.limit || 1)) * 100)}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-3 border-t border-dark-200">
+                      <span className="text-xs text-dark-400">
+                        {stats?.articles?.limit === -1
+                          ? "Tanpa batas"
+                          : `Sisa: ${stats?.articles?.remaining || 0}`}
+                      </span>
+                      <span className="text-xs font-semibold text-primary-600">
+                        Aktif
+                      </span>
+                    </div>
+                  </div>
 
-                {/* Videos */}
-                <div className="p-6 bg-dark-50 rounded-xl border border-dark-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-secondary-500 rounded-xl flex items-center justify-center">
-                      <FiPlay className="w-6 h-6 text-white" />
+                  {/* Videos */}
+                  <div className="p-6 bg-dark-50 rounded-xl border border-dark-100">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-secondary-500 rounded-xl flex items-center justify-center">
+                        <FiPlay className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-dark-500 font-medium">
+                          Video Tutorial
+                        </p>
+                        <p className="text-3xl font-bold text-dark-800">
+                          {stats?.videos?.limit === -1 ? (
+                            "Unlimited"
+                          ) : (
+                            <>
+                              {stats?.videos?.accessed || 0}
+                              <span className="text-lg text-dark-400">
+                                /{stats?.videos?.limit || 0}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-dark-500 font-medium">
-                        Video Tutorial
-                      </p>
-                      <p className="text-3xl font-bold text-dark-800">
-                        {membershipInfo.videos}
-                      </p>
+                    {/* Progress Bar */}
+                    {stats?.videos?.limit !== -1 && (
+                      <div className="mb-3">
+                        <div className="w-full bg-dark-200 rounded-full h-2">
+                          <div
+                            className="bg-secondary-500 h-2 rounded-full transition-all"
+                            style={{
+                              width: `${Math.min(100, ((stats?.videos?.accessed || 0) / (stats?.videos?.limit || 1)) * 100)}%`,
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-3 border-t border-dark-200">
+                      <span className="text-xs text-dark-400">
+                        {stats?.videos?.limit === -1
+                          ? "Tanpa batas"
+                          : `Sisa: ${stats?.videos?.remaining || 0}`}
+                      </span>
+                      <span className="text-xs font-semibold text-secondary-600">
+                        Aktif
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-dark-200">
-                    <span className="text-xs text-dark-400">Per bulan</span>
-                    <span className="text-xs font-semibold text-secondary-600">
-                      Aktif
-                    </span>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -220,13 +281,17 @@ const Profile = () => {
                 <div className="flex items-center justify-between py-3">
                   <span className="text-sm text-dark-600">Artikel</span>
                   <span className="text-sm font-bold text-dark-800">
-                    {membershipInfo.articles}
+                    {membershipInfo.articles === -1
+                      ? "Unlimited"
+                      : membershipInfo.articles}
                   </span>
                 </div>
                 <div className="flex items-center justify-between py-3">
                   <span className="text-sm text-dark-600">Video</span>
                   <span className="text-sm font-bold text-dark-800">
-                    {membershipInfo.videos}
+                    {membershipInfo.videos === -1
+                      ? "Unlimited"
+                      : membershipInfo.videos}
                   </span>
                 </div>
               </div>

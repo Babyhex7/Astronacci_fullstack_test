@@ -173,6 +173,19 @@ exports.getMe = async (req, res) => {
 
 exports.oauthCallback = (req, res) => {
   const user = req.user;
+  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
+  if (user.dataValues.needLinkAccount) {
+    const params = new URLSearchParams({
+      newProvider: user.dataValues.newProvider,
+      existingProvider: user.dataValues.existingProvider,
+      newProviderId: user.dataValues.newProviderId,
+      email: user.email,
+      newAvatarUrl: user.dataValues.newAvatarUrl || "",
+    });
+    return res.redirect(`${clientUrl}/link-account?${params.toString()}`);
+  }
+
   const token = generateToken(user);
 
   res.cookie("auth_token", token, {
@@ -183,12 +196,64 @@ exports.oauthCallback = (req, res) => {
     path: "/",
   });
 
-  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
-  const redirectUrl = user.membership_id
-    ? `${clientUrl}/dashboard`
-    : `${clientUrl}/select-membership`;
+  let redirectUrl;
+  if (user.dataValues.isNewUser) {
+    redirectUrl = `${clientUrl}/select-membership`;
+  } else if (user.membership_id) {
+    redirectUrl = `${clientUrl}/dashboard`;
+  } else {
+    redirectUrl = `${clientUrl}/select-membership`;
+  }
 
   res.redirect(redirectUrl);
+};
+
+exports.linkAccount = async (req, res) => {
+  const { email, newProvider, newProviderId, newAvatarUrl } = req.body;
+
+  try {
+    const user = await User.findOne({
+      where: { email },
+      include: { model: Membership, as: "membership" },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User tidak ditemukan" });
+    }
+
+    await user.update({
+      auth_provider: newProvider,
+      provider_id: newProviderId,
+      avatar_url: user.avatar_url || newAvatarUrl || null,
+    });
+
+    const token = generateToken(user);
+
+    res.cookie("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    res.json({
+      message: `Akun ${newProvider} berhasil ditautkan`,
+      user: {
+        id: user.id,
+        email: user.email,
+        full_name: user.full_name,
+        avatar_url: user.avatar_url,
+        auth_provider: user.auth_provider,
+        membership: user.membership,
+      },
+    });
+  } catch (err) {
+    console.error("Error linkAccount:", err);
+    res
+      .status(500)
+      .json({ message: "Gagal menautkan akun", error: err.message });
+  }
 };
 
 exports.logout = (req, res) => {

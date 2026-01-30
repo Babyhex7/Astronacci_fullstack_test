@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getVideos } from "../services/videoService";
@@ -22,15 +22,7 @@ const Videos = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    fetchVideos();
-  }, [debouncedSearch, filter]);
-
-  useEffect(() => {
-    fetchAllVideos();
-  }, []);
-
-  const fetchVideos = async () => {
+  const fetchVideos = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -44,16 +36,24 @@ const Videos = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedSearch, filter]);
 
-  const fetchAllVideos = async () => {
+  const fetchAllVideos = useCallback(async () => {
     try {
       const data = await getVideos();
       setAllVideos(data.videos || []);
     } catch (error) {
       console.error("Error fetching all videos:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+
+  useEffect(() => {
+    fetchAllVideos();
+  }, [fetchAllVideos]);
 
   const categories = [
     ...new Set(allVideos.map((v) => v.category).filter(Boolean)),

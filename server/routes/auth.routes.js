@@ -45,6 +45,23 @@ router.get(
   authController.oauthCallback,
 );
 
+router.get(
+  "/github",
+  passport.authenticate("github", {
+    scope: ["user:email"],
+  }),
+);
+
+router.get(
+  "/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=oauth_failed`,
+    session: false,
+  }),
+  authController.oauthCallback,
+);
+
+router.post("/link-account", authController.linkAccount);
 router.post("/logout", authController.logout);
 
 module.exports = router;

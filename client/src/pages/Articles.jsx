@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { getArticles } from "../services/articleService";
@@ -22,15 +22,7 @@ const Articles = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    fetchArticles();
-  }, [debouncedSearch, filter]);
-
-  useEffect(() => {
-    fetchAllArticles();
-  }, []);
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
@@ -44,16 +36,24 @@ const Articles = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [debouncedSearch, filter]);
 
-  const fetchAllArticles = async () => {
+  const fetchAllArticles = useCallback(async () => {
     try {
       const data = await getArticles();
       setAllArticles(data.articles || []);
     } catch (error) {
       console.error("Error fetching all articles:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchArticles();
+  }, [fetchArticles]);
+
+  useEffect(() => {
+    fetchAllArticles();
+  }, [fetchAllArticles]);
 
   const categories = [
     ...new Set(allArticles.map((a) => a.category).filter(Boolean)),

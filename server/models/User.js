@@ -28,7 +28,7 @@ const User = sequelize.define(
       allowNull: true,
     },
     auth_provider: {
-      type: DataTypes.ENUM("local", "google", "facebook"),
+      type: DataTypes.ENUM("local", "google", "facebook", "github"),
       allowNull: false,
       defaultValue: "local",
     },

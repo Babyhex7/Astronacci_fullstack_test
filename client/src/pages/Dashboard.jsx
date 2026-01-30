@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { getStats } from "../services/userService";
+import { getMembershipInfo } from "../utils/constants";
 import Loader from "../components/common/Loader";
 import Badge from "../components/common/Badge";
 import { FiFileText, FiPlay, FiTrendingUp, FiUser } from "react-icons/fi";
@@ -12,11 +13,7 @@ const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const data = await getStats();
       setStats(data);
@@ -25,30 +22,24 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
 
   const membership = stats?.membership || user?.membership;
-  const getMembershipInfo = () => {
-    const type = membership?.type || "A";
-    const info = {
-      A: { name: "Free", color: "default-solid", limit: 3 },
-      B: { name: "Basic", color: "primary-solid", limit: 10 },
-      C: { name: "Premium", color: "warning-solid", limit: -1 },
-    };
-    return info[type] || info.A;
-  };
-
-  const membershipInfo = getMembershipInfo();
+  const membershipInfo = getMembershipInfo(membership?.type);
   const articleAccessed = stats?.stats?.articles?.accessed ?? 0;
   const videoAccessed = stats?.stats?.videos?.accessed ?? 0;
   const articleLimit =
     stats?.stats?.articles?.limit ??
     membership?.article_limit ??
-    membershipInfo.limit;
+    membershipInfo.articles;
   const videoLimit =
     stats?.stats?.videos?.limit ??
     membership?.video_limit ??
-    membershipInfo.limit;
+    membershipInfo.videos;
 
   const containerVariants = {
     hidden: { opacity: 0 },
