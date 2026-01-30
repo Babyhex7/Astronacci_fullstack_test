@@ -2,6 +2,10 @@
 
 Platform web fullstack untuk edukasi trading dan research pasar finansial. Aplikasi ini menyediakan akses ke artikel analisis market dan video tutorial trading berdasarkan level membership pengguna.
 
+## Screenshot
+
+![Home Page](./screenshots/home.png)
+
 ## Fitur
 
 - **Multi-Provider Authentication** - Login dengan email/password, Google, atau GitHub
@@ -181,3 +185,48 @@ client/
   │   └── utils/       - Helper functions
   └── public/          - Static files
 ```
+
+## API Endpoints
+
+Base URL: `http://localhost:5000/api`
+
+### Auth
+
+| Method | Endpoint                  | Deskripsi                   | Auth |
+| ------ | ------------------------- | --------------------------- | ---- |
+| POST   | `/auth/register`          | Register akun baru          | -    |
+| POST   | `/auth/login`             | Login dengan email/password | -    |
+| POST   | `/auth/logout`            | Logout                      | ✓    |
+| GET    | `/auth/me`                | Get current user info       | ✓    |
+| POST   | `/auth/select-membership` | Pilih tipe membership       | ✓    |
+| POST   | `/auth/link-account`      | Link akun OAuth             | ✓    |
+| GET    | `/auth/google`            | Login dengan Google         | -    |
+| GET    | `/auth/github`            | Login dengan GitHub         | -    |
+| GET    | `/auth/facebook`          | Login dengan Facebook       | -    |
+
+### Articles
+
+| Method | Endpoint        | Deskripsi          | Auth |
+| ------ | --------------- | ------------------ | ---- |
+| GET    | `/articles`     | Get semua artikel  | ✓    |
+| GET    | `/articles/:id` | Get detail artikel | ✓    |
+
+Query params untuk `/articles`: `search`, `category`
+
+### Videos
+
+| Method | Endpoint      | Deskripsi        | Auth |
+| ------ | ------------- | ---------------- | ---- |
+| GET    | `/videos`     | Get semua video  | ✓    |
+| GET    | `/videos/:id` | Get detail video | ✓    |
+
+Query params untuk `/videos`: `search`, `category`
+
+### Users
+
+| Method | Endpoint                 | Deskripsi                        | Auth |
+| ------ | ------------------------ | -------------------------------- | ---- |
+| GET    | `/users/profile`         | Get profile user                 | ✓    |
+| GET    | `/users/stats`           | Get statistik akses konten       | ✓    |
+| GET    | `/users/content-history` | Get riwayat konten yang diakses  | ✓    |
+| GET    | `/users/viewed-content`  | Get ID konten yang sudah dilihat | ✓    |
